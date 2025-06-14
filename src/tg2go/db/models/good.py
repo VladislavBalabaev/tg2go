@@ -1,11 +1,23 @@
-from datetime import datetime
+from __future__ import annotations
+
+from datetime import UTC, datetime
+from decimal import Decimal
+from enum import Enum
+from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from sqlalchemy import Boolean, DateTime, Integer, Numeric, Text, text
+from sqlalchemy import Boolean, DateTime, Enum as SqlEnum, Numeric, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
-from tg2go.db.models.order_item import OrderItem
+
+if TYPE_CHECKING:
+    from tg2go.db.models.order_item import OrderItem
+
+
+# TODO: add categories
+class GoodCategory(str, Enum):
+    pending = "vkusnovoe"
 
 
 class Good(Base):
@@ -19,6 +31,14 @@ class Good(Base):
     )
 
     # --- description ---
+    price_rub: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2),
+        nullable=False,
+    )
+    category: Mapped[GoodCategory] = mapped_column(
+        SqlEnum(GoodCategory),
+        nullable=False,
+    )
     description: Mapped[str] = mapped_column(
         Text,
         nullable=False,
@@ -27,43 +47,30 @@ class Good(Base):
         Text,
         nullable=False,
     )
-    price_rub: Mapped[float] = mapped_column(
-        Numeric(10, 2),
-        nullable=False,
-    )
-    category: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-    )
-    subcategory: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-    )
     image_url: Mapped[str] = mapped_column(
         Text,
         nullable=False,
     )  # TODO: more about it
-    weight_grams: Mapped[int] = mapped_column(
-        Integer,
-        nullable=False,
-    )
     available: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
+        nullable=False,
     )
 
     # --- time ---
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=text("CURRENT_TIMESTAMP"),
+        default=datetime.now(UTC),
         nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=text("CURRENT_TIMESTAMP"),
-        onupdate=text("CURRENT_TIMESTAMP"),
+        default=datetime.now(UTC),
+        onupdate=datetime.now(UTC),
         nullable=False,
     )
 
     # --- relationship ---
     order_items: Mapped[list[OrderItem]] = relationship(back_populates="good")
+
+    # TODO: add __repr__ to get string representation of a good directly!

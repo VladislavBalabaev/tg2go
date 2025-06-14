@@ -1,6 +1,6 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
-from sqlalchemy import BigInteger, DateTime, Text, text
+from sqlalchemy import BigInteger, DateTime, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from tg2go.db.base import Base
@@ -30,12 +30,12 @@ class User(Base):
     # --- time ---
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=text("CURRENT_TIMESTAMP"),
+        default=datetime.now(UTC),
         nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        server_default=text("CURRENT_TIMESTAMP"),
-        onupdate=text("CURRENT_TIMESTAMP"),
+        default=datetime.now(UTC),
+        onupdate=datetime.now(UTC),
         nullable=False,
     )
