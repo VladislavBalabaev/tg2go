@@ -1,0 +1,10 @@
+.vscode
+*cache
+*__pycache__/
+
+data
+try
+.env
+venv
+notes.md
+code_combined.txt
