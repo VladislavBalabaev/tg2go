@@ -31,3 +31,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Initialize with contents of [random_coffee_bot_telegram](https://github.com/VladislavBalabaev/random_coffee_bot_telegram)
+- Users & Goods & Orders models for DB tables
