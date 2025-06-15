@@ -15,6 +15,7 @@ class GoodRepository:
     def __init__(self, session: async_sessionmaker[AsyncSession]):
         self.session = session
 
+    # ----- Create -----
     async def AddGood(self, good: Good) -> None:
         async with self.session() as session:
             try:
@@ -34,6 +35,7 @@ class GoodRepository:
 
             return list(result.scalars().all())
 
+    # ----- Update -----
     async def UpdateGood(
         self,
         good_id: GoodId,
@@ -55,6 +57,7 @@ class GoodRepository:
                 f"Good(good_id={good_id}) updated: '{column}={value}' successfully."
             )
 
+    # ----- Delete -----
     async def InvalidateGood(self, good_id: GoodId) -> None:
         await self.UpdateGood(
             good_id=good_id,

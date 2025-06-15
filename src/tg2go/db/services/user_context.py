@@ -1,35 +1,31 @@
-from tg2go.db.repositories.message import MessageRepository
-from tg2go.db.repositories.nes_user import NesUserRepository
-from tg2go.db.repositories.tg_user import TgUserRepository
-from tg2go.db.services.message import MessageService
+from tg2go.db.repositories.good import GoodRepository
+from tg2go.db.repositories.order import OrderRepository
+from tg2go.db.repositories.user import UserRepository
+from tg2go.db.services.good import GoodService
+from tg2go.db.services.order import OrderService
 from tg2go.db.services.user import UserService
 from tg2go.db.session import AsyncSessionLocal
 
 
-class UserContextService(UserService, MessageService):
-    """
-    Combines UserService and MessageService into a single context service.
-    Inherits methods from both services.
-    """
-
-    def __init__(self, user_service: UserService, message_service: MessageService):
-        # Initialize both parent classes explicitly
-        UserService.__init__(
-            self,
-            tg_user_repo=user_service.tg_user_repo,
-            nes_user_repo=user_service.nes_user_repo,
-        )
-        MessageService.__init__(self, message_service.message_repo)
+class ContextService(UserService, GoodService, OrderService):
+    def __init__(
+        self,
+        good_repo: GoodRepository,
+        order_repo: OrderRepository,
+        user_repo: UserRepository,
+    ):
+        GoodService.__init__(self, good_repo)
+        OrderService.__init__(self, order_repo)
+        UserService.__init__(self, user_repo)
 
     # async def ...
 
 
-async def GetUserContextService() -> UserContextService:
-    tg_user_repo = TgUserRepository(AsyncSessionLocal)
-    nes_user_repo = NesUserRepository(AsyncSessionLocal)
-    message_repo = MessageRepository(AsyncSessionLocal)
+def GetContextService() -> ContextService:
+    context_service = ContextService(
+        good_repo=GoodRepository(AsyncSessionLocal),
+        order_repo=OrderRepository(AsyncSessionLocal),
+        user_repo=UserRepository(AsyncSessionLocal),
+    )
 
-    user_service = UserService(tg_user_repo=tg_user_repo, nes_user_repo=nes_user_repo)
-    message_service = MessageService(message_repo)
-
-    return UserContextService(user_service, message_service)
+    return context_service

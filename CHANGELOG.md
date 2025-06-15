@@ -31,6 +31,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Repository methods for DB models
+- Context service for work with DB
 
 ## [0.1.0] - 2025-06-14 - Vlad
 

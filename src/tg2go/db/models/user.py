@@ -1,6 +1,6 @@
-from datetime import UTC, datetime
+from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, Text
+from sqlalchemy import BigInteger, Boolean, DateTime, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from tg2go.db.base import Base
@@ -27,15 +27,27 @@ class User(Base):
         nullable=True,
     )
 
+    # --- state ---
+    confirmed: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+    blocked: Mapped[bool] = mapped_column(
+        Boolean,
+        default=False,
+        nullable=False,
+    )
+
     # --- time ---
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.now(UTC),
+        default=datetime.now,
         nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.now(UTC),
-        onupdate=datetime.now(UTC),
+        default=datetime.now,
+        onupdate=datetime.now,
         nullable=False,
     )

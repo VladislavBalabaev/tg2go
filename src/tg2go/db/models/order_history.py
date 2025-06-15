@@ -14,7 +14,8 @@ from sqlalchemy import (
     event,
     inspect,
 )
-from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
 
@@ -58,7 +59,7 @@ class OrderHistory(Base):
     )
 
     # --- time ---
-    changed_at: Mapped[datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,
     )
@@ -67,9 +68,9 @@ class OrderHistory(Base):
     order: Mapped[Order] = relationship(back_populates="history")
 
 
-@event.listens_for(Session, "before_flush")
+@event.listens_for(AsyncSession, "before_flush")
 def SaveToOrderHistory(
-    session: Session,
+    session: AsyncSession,
     flush_context: Any,
     instances: Any,
 ) -> None:
@@ -82,13 +83,16 @@ def SaveToOrderHistory(
         if not state.attrs.updated_at.history.has_changes():
             continue
 
+        now = datetime.now()  # noqa: DTZ005
+        order.updated_at = now
+
         session.add(
             OrderHistory(
                 status=order.status,
                 total_price_rub=order.total_price_rub,
                 internal_comment=order.internal_comment,
                 client_comment=order.client_comment,
-                changed_at=order.updated_at,
+                updated_at=order.updated_at,
                 order=order,
             )
         )

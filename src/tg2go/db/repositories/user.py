@@ -17,7 +17,6 @@ class UserRepository:
         self.session = session
 
     # ----- Create -----
-
     async def CreateUser(self, chat_id: int) -> None:
         async with self.session() as session:
             try:
@@ -33,7 +32,6 @@ class UserRepository:
                 )
 
     # ----- Read -----
-
     @overload
     async def GetUsersOnCondition(
         self,
@@ -88,7 +86,6 @@ class UserRepository:
         return result[0] if result else None
 
     # ----- Update -----
-
     async def UpdateUser(
         self,
         chat_id: int,
@@ -110,5 +107,3 @@ class UserRepository:
             logging.info(
                 f"User(chat_id={chat_id}) updated: '{column}={value}' successfully."
             )
-
-    # ----- Delete -----

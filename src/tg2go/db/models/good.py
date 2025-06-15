@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import datetime
 from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING, NewType
@@ -68,13 +68,13 @@ class Good(Base):
     # --- time ---
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.now(UTC),
+        default=datetime.now,
         nullable=False,
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=datetime.now(UTC),
-        onupdate=datetime.now(UTC),
+        default=datetime.now,
+        onupdate=datetime.now,
         nullable=False,
     )
 
