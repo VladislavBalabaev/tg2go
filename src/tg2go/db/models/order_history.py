@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
-from uuid import UUID
 
 from sqlalchemy import (
     BigInteger,
@@ -20,7 +19,7 @@ from sqlalchemy.orm import Mapped, Session, mapped_column, relationship
 from tg2go.db.base import Base
 
 if TYPE_CHECKING:
-    from tg2go.db.models.order import Order, OrderStatus
+    from tg2go.db.models.order import Order, OrderId, OrderStatus
 
 
 class OrderHistory(Base):
@@ -34,7 +33,7 @@ class OrderHistory(Base):
     )
 
     # --- secondary key ---
-    order_id: Mapped[UUID] = mapped_column(
+    order_id: Mapped[OrderId] = mapped_column(
         ForeignKey("orders.order_id", ondelete="CASCADE"),
         index=True,
         nullable=False,
@@ -85,11 +84,11 @@ def SaveToOrderHistory(
 
         session.add(
             OrderHistory(
-                order=order,
                 status=order.status,
                 total_price_rub=order.total_price_rub,
                 internal_comment=order.internal_comment,
                 client_comment=order.client_comment,
                 changed_at=order.updated_at,
+                order=order,
             )
         )

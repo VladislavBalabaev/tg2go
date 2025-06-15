@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NewType
 from uuid import UUID, uuid4
 
 from sqlalchemy import Boolean, DateTime, Enum as SqlEnum, Numeric, Text
@@ -15,6 +15,9 @@ if TYPE_CHECKING:
     from tg2go.db.models.order_item import OrderItem
 
 
+GoodId = NewType("GoodId", UUID)
+
+
 # TODO: add categories
 class GoodCategory(str, Enum):
     pending = "vkusnovoe"
@@ -24,7 +27,7 @@ class Good(Base):
     __tablename__ = "goods"
 
     # --- primary key ---
-    good_id: Mapped[UUID] = mapped_column(
+    good_id: Mapped[GoodId] = mapped_column(
         primary_key=True,
         default=uuid4,
         nullable=False,
@@ -56,6 +59,11 @@ class Good(Base):
         default=True,
         nullable=False,
     )
+    valid: Mapped[bool] = mapped_column(
+        Boolean,
+        default=True,
+        nullable=False,
+    )
 
     # --- time ---
     created_at: Mapped[datetime] = mapped_column(
@@ -71,6 +79,14 @@ class Good(Base):
     )
 
     # --- relationship ---
-    order_items: Mapped[list[OrderItem]] = relationship(back_populates="good")
+    order_items: Mapped[list[OrderItem]] = relationship(
+        back_populates="good",
+        cascade="all, delete-orphan",
+    )
 
     # TODO: add __repr__ to get string representation of a good directly!
+
+
+# TODO: maybe create smth like:
+# def CreateOrder(chat_id: int) -> Order:
+#     return Order(chat_id=chat_id)

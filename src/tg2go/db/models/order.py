@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NewType
 from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, Enum as SqlEnum, ForeignKey, Numeric, Text
@@ -26,11 +26,14 @@ class OrderStatus(str, Enum):
     cancelled = "cancelled"
 
 
+OrderId = NewType("OrderId", UUID)
+
+
 class Order(Base):
     __tablename__ = "orders"
 
     # --- primary key ---
-    order_id: Mapped[UUID] = mapped_column(
+    order_id: Mapped[OrderId] = mapped_column(
         primary_key=True,
         default=uuid4,
         nullable=False,
@@ -40,6 +43,7 @@ class Order(Base):
     chat_id: Mapped[int] = mapped_column(
         ForeignKey("users.chat_id"),
         index=True,
+        nullable=False,
     )
 
     # --- description ---
@@ -76,7 +80,10 @@ class Order(Base):
     )
 
     # --- relationship ---
-    order_items: Mapped[list[OrderItem]] = relationship(back_populates="order")
+    order_items: Mapped[list[OrderItem]] = relationship(
+        back_populates="order",
+        cascade="all, delete-orphan",
+    )
     history: Mapped[list[OrderHistory]] = relationship(
         back_populates="order",
         cascade="all, delete-orphan",

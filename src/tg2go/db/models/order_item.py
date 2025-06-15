@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
-from uuid import UUID
 
 from sqlalchemy import DateTime, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -11,24 +10,24 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from tg2go.db.base import Base
 
 if TYPE_CHECKING:
-    from tg2go.db.models.good import Good
-    from tg2go.db.models.order import Order
+    from tg2go.db.models.good import Good, GoodId
+    from tg2go.db.models.order import Order, OrderId
 
 
 class OrderItem(Base):
     __tablename__ = "order_items"
 
     # --- primary key ---
-    item_id: Mapped[int] = mapped_column(
+    order_item_id: Mapped[int] = mapped_column(
         primary_key=True,
         autoincrement=True,
     )
 
     # --- dependency ---
-    order_id: Mapped[UUID] = mapped_column(
+    order_id: Mapped[OrderId] = mapped_column(
         ForeignKey("orders.order_id"),
     )
-    good_id: Mapped[UUID] = mapped_column(
+    good_id: Mapped[GoodId] = mapped_column(
         ForeignKey("goods.good_id"),
     )
 
