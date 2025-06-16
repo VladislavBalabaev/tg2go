@@ -32,3 +32,11 @@ class UserService:
         )
 
         return result
+
+    async def GetChatIdByUsername(self, username: str) -> int | None:
+        result = await self.GetUsersOnCondition(
+            condition=User.username == username,
+            column=User.chat_id,
+        )
+
+        return int(result[0]) if result else None

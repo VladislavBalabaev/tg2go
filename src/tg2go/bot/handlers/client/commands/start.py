@@ -8,11 +8,11 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 from tg2go.bot.handlers.client.email.verification import CreateCode
-from tg2go.bot.lib.message.checks import CheckVerified
+from tg2go.bot.lib.message.checks import CheckConfirmedd
 from tg2go.bot.lib.message.io import ContextIO, SendDocument, SendMessage
 from tg2go.core.configs.paths import PATH_TERMS_OF_USE
-from tg2go.db.models.clients import TgUser
-from tg2go.db.services.user_context import GetUserContextService
+from tg2go.db.models.users import TgUser
+from tg2go.db.services.user_context import GetContextService
 
 router = Router()
 
@@ -28,7 +28,7 @@ class StartStates(StatesGroup):
 
 @router.message(StateFilter(None), Command("start"))
 async def CommandStart(message: types.Message, state: FSMContext) -> None:
-    if await CheckVerified(chat_id=message.chat.id):
+    if await CheckConfirmedd(chat_id=message.chat.id):
         await SendMessage(
             chat_id=message.chat.id,
             text="You've already registered!",
@@ -78,7 +78,7 @@ async def CommandStartGetPhoneNumber(message: types.Message, state: FSMContext) 
         )
         return
 
-    ctx = await GetUserContextService()
+    ctx = await GetContextService()
     await ctx.UpdateTgUser(
         chat_id=message.chat.id,
         column=TgUser.phone_number,
@@ -113,7 +113,7 @@ async def CommandStartEmailGet(message: types.Message, state: FSMContext) -> Non
         )
         return
 
-    ctx = await GetUserContextService()
+    ctx = await GetContextService()
     await ctx.UpdateTgUser(
         chat_id=message.chat.id,
         column=TgUser.nes_email,
@@ -155,7 +155,7 @@ async def CommandStartEmailConfirm(message: types.Message, state: FSMContext) ->
         )
         return
 
-    ctx = await GetUserContextService()
+    ctx = await GetContextService()
     await ctx.UpdateTgUser(
         chat_id=message.chat.id,
         column=TgUser.verified,
