@@ -11,7 +11,7 @@ from aiolimiter import AsyncLimiter
 from tg2go.bot.lib.chat.block import UserBlockedBot
 from tg2go.bot.lib.chat.username import GetChatUserLoggingPart
 from tg2go.bot.lifecycle.creator import bot
-from tg2go.db.services.user_context import GetUserContextService
+from tg2go.db.services.user_context import GetContextService
 
 
 class ContextIO(str, Enum):
@@ -54,9 +54,6 @@ async def SendDocument(
             reply_markup=reply_markup,
         )
 
-        ctx = await GetUserContextService()
-        await ctx.RegisterOutgoingMessage(message)
-
     except TelegramForbiddenError:
         add = ContextIO.Blocked
         await UserBlockedBot(chat_id)
@@ -90,9 +87,6 @@ async def SendMessage(
             text=text,
             reply_markup=reply_markup,
         )
-
-        ctx = await GetUserContextService()
-        await ctx.RegisterOutgoingMessage(message)
 
     except TelegramForbiddenError:
         add = ContextIO.Blocked
@@ -130,13 +124,11 @@ async def SendMessagesToGroup(messages: list[PersonalMsg]) -> None:
 
 
 async def _CheckNewUser(chat_id: int) -> None:
-    ctx = await GetUserContextService()
-    exists = await ctx.CheckTgUserExists(chat_id)
+    ctx = GetContextService()
+    exists = await ctx.CheckUserExists(chat_id)
 
-    if exists:
-        return
-
-    await ctx.RegisterTgUser(chat_id=chat_id)
+    if not exists:
+        await ctx.CreateUser(chat_id=chat_id)
 
 
 async def ReceiveMessage(
@@ -148,9 +140,6 @@ async def ReceiveMessage(
 
     part = await GetChatUserLoggingPart(chat_id)
     logging.info(f"{part} {SignIO.In.value}{context.value} {repr(message.text)}")
-
-    ctx = await GetUserContextService()
-    await ctx.RegisterIncomingMessage(message)
 
 
 async def ReceiveCallback(query: types.CallbackQuery, data: CallbackData) -> None:

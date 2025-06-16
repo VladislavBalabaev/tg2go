@@ -1,13 +1,13 @@
-from tg2go.db.models.clients import TgUser
-from tg2go.db.services.user_context import GetUserContextService
+from tg2go.db.models.user import User
+from tg2go.db.services.user_context import GetContextService
 
 
-async def CheckVerified(chat_id: int) -> bool:
-    ctx = await GetUserContextService()
+async def CheckConfirmedd(chat_id: int) -> bool:
+    ctx = GetContextService()
 
-    verified = await ctx.GetTgUser(
+    confirmed = await ctx.GetUser(
         chat_id=chat_id,
-        column=TgUser.verified,
+        column=User.confirmed,
     )
 
-    return verified if verified else False
+    return confirmed if confirmed else False
