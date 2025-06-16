@@ -53,21 +53,30 @@ class GoodRepository:
                 )
 
             await session.commit()
-            logging.info(
-                f"Good(good_id={good_id}) updated: '{column}={value}' successfully."
-            )
+
+        logging.info(
+            f"Good(good_id={good_id}) updated: '{column}={value}' successfully."
+        )
 
     # ----- Delete -----
     async def InvalidateGood(self, good_id: GoodId) -> None:
-        await self.UpdateGood(
-            good_id=good_id,
-            column=Good.available,
-            value=False,
-        )
-        await self.UpdateGood(
-            good_id=good_id,
-            column=Good.valid,
-            value=False,
-        )
+        async with self.session() as session:
+            result = await session.execute(
+                update(Good)
+                .where(Good.good_id == good_id)
+                .values(
+                    {
+                        Good.available: False,
+                        Good.valid: False,
+                    }
+                )
+            )
+
+            if result.rowcount == 0:
+                raise NoResultFound(
+                    f"Failed to invalidate good. No Good(good_id={good_id}) found."
+                )
+
+            await session.commit()
 
         logging.info(f"Good(good_id={good_id}) is invalidated.")

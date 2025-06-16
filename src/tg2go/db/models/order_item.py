@@ -1,20 +1,20 @@
 from __future__ import annotations
 
-from datetime import datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, ForeignKey, Numeric
+from sqlalchemy import ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
+from tg2go.db.models.common.time import TimestampMixin
 
 if TYPE_CHECKING:
     from tg2go.db.models.good import Good, GoodId
     from tg2go.db.models.order import Order, OrderId
 
 
-class OrderItem(Base):
+class OrderItem(Base, TimestampMixin):
     __tablename__ = "order_items"
 
     # --- primary key ---
@@ -38,19 +38,6 @@ class OrderItem(Base):
     )
     unit_price_rub: Mapped[Decimal] = mapped_column(
         Numeric(10, 2),
-        nullable=False,
-    )
-
-    # --- time ---
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=datetime.now,
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=datetime.now,
-        onupdate=datetime.now,
         nullable=False,
     )
 

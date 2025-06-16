@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from datetime import datetime
 from decimal import Decimal
 from enum import Enum
 from typing import TYPE_CHECKING, NewType
 from uuid import UUID, uuid4
 
-from sqlalchemy import Boolean, DateTime, Enum as SqlEnum, Numeric, Text
+from sqlalchemy import Boolean, Enum as SqlEnum, Numeric, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
+from tg2go.db.models.common.time import TimestampMixin
 
 if TYPE_CHECKING:
     from tg2go.db.models.order_item import OrderItem
@@ -23,7 +23,7 @@ class GoodCategory(str, Enum):
     pending = "vkusnovoe"
 
 
-class Good(Base):
+class Good(Base, TimestampMixin):
     __tablename__ = "goods"
 
     # --- primary key ---
@@ -62,19 +62,6 @@ class Good(Base):
     valid: Mapped[bool] = mapped_column(
         Boolean,
         default=True,
-        nullable=False,
-    )
-
-    # --- time ---
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=datetime.now,
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=datetime.now,
-        onupdate=datetime.now,
         nullable=False,
     )
 

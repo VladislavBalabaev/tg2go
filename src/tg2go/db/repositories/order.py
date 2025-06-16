@@ -1,5 +1,5 @@
 import logging
-    
+
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from tg2go.db.models.good import Good, GoodId
@@ -84,6 +84,7 @@ class OrderRepository:
                 await session.delete(item)
 
             if order.total_price_rub < 0:
+                await session.rollback()
                 raise ValueError(f"Total price RUB is negative for {order}")
 
             logging.info(f"After removing good {good} order is {order}")

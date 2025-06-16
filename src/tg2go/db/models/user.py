@@ -1,12 +1,11 @@
-from datetime import datetime
-
-from sqlalchemy import BigInteger, Boolean, DateTime, Text
+from sqlalchemy import BigInteger, Boolean, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from tg2go.db.base import Base
+from tg2go.db.models.common.time import TimestampMixin
 
 
-class User(Base):
+class User(Base, TimestampMixin):
     __tablename__ = "users"
 
     # --- primary key ---
@@ -36,18 +35,5 @@ class User(Base):
     blocked: Mapped[bool] = mapped_column(
         Boolean,
         default=False,
-        nullable=False,
-    )
-
-    # --- time ---
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=datetime.now,
-        nullable=False,
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=datetime.now,
-        onupdate=datetime.now,
         nullable=False,
     )

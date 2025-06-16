@@ -12,9 +12,9 @@ from sqlalchemy import (
     Numeric,
     Text,
     event,
-    inspect,
+    insert,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
@@ -68,31 +68,36 @@ class OrderHistory(Base):
     order: Mapped[Order] = relationship(back_populates="history")
 
 
-@event.listens_for(AsyncSession, "before_flush")
-def SaveToOrderHistory(
-    session: AsyncSession,
-    flush_context: Any,
-    instances: Any,
+@event.listens_for(Order, "after_insert", propagate=True)
+def _SaveToOrderHistoryOnInsert(
+    mapper: Any,
+    connection: Connection,
+    target: Order,
 ) -> None:
-    for obj in session.dirty:
-        if not isinstance(obj, Order):
-            continue
-        order = obj
+    stmt = insert(OrderHistory).values(
+        order_id=target.order_id,
+        status=target.status,
+        total_price_rub=target.total_price_rub,
+        internal_comment=target.internal_comment,
+        client_comment=target.client_comment,
+        updated_at=target.created_at,
+    )
+    connection.execute(stmt)
 
-        state = inspect(order)
-        if not state.attrs.updated_at.history.has_changes():
-            continue
 
-        now = datetime.now()  # noqa: DTZ005
-        order.updated_at = now
+@event.listens_for(Order, "after_update", propagate=True)
+def _SaveToOrderHistoryOnUpdate(
+    mapper: Any,
+    connection: Connection,
+    target: Order,
+) -> None:
+    stmt = insert(OrderHistory).values(
+        order_id=target.order_id,
+        status=target.status,
+        total_price_rub=target.total_price_rub,
+        internal_comment=target.internal_comment,
+        client_comment=target.client_comment,
+        updated_at=target.updated_at,
+    )
 
-        session.add(
-            OrderHistory(
-                status=order.status,
-                total_price_rub=order.total_price_rub,
-                internal_comment=order.internal_comment,
-                client_comment=order.client_comment,
-                updated_at=order.updated_at,
-                order=order,
-            )
-        )
+    connection.execute(stmt)
