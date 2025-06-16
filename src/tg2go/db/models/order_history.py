@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
@@ -84,6 +85,10 @@ def _SaveToOrderHistoryOnInsert(
     )
     connection.execute(stmt)
 
+    logging.info(
+        f"OrderItem(order_id={target.order_id}, updated_at={target.created_at}) is inserted upon order insertion."
+    )
+
 
 @event.listens_for(Order, "after_update", propagate=True)
 def _SaveToOrderHistoryOnUpdate(
@@ -101,3 +106,7 @@ def _SaveToOrderHistoryOnUpdate(
     )
 
     connection.execute(stmt)
+
+    logging.info(
+        f"OrderItem(order_id={target.order_id}, updated_at={target.created_at}) is updated upon order update."
+    )

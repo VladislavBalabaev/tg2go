@@ -6,7 +6,7 @@ class GoodService:
         self.good_repo = good_repo
 
         # --- Create ---
-        self.AddGood = self.good_repo.AddGood
+        self.InsertNewGood = self.good_repo.InsertNewGood
 
         # --- Read ---
         self.GetAvailableGoods = self.good_repo.GetAvailableGoods

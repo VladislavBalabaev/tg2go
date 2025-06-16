@@ -16,15 +16,15 @@ class GoodRepository:
         self.session = session
 
     # ----- Create -----
-    async def AddGood(self, good: Good) -> None:
+    async def InsertNewGood(self, good: Good) -> None:
         async with self.session() as session:
             try:
                 session.add(good)
                 await session.commit()
-                logging.info(f"{good} created successfully.")
+                logging.info(f"{good} inserted successfully.")
             except IntegrityError:
                 await session.rollback()
-                logging.error(f"{good} already exists. Creation failed.")
+                logging.error(f"{good} already exists. Insertion failed.")
                 raise
 
     async def GetAvailableGoods(self) -> list[Good]:
