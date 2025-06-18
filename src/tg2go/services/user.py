@@ -7,16 +7,16 @@ from tg2go.db.session import AsyncSessionLocal
 
 class UserService:
     def __init__(self, user_repo: UserRepository):
-        self.user_repo = user_repo
+        self._user = user_repo
 
         # --- Create ---
-        self.CreateUser = self.user_repo.CreateUser
+        self.CreateUser = self._user.CreateUser
 
         # --- Read ---
-        self.GetUser = self.user_repo.GetUser
+        self.GetUser = self._user.GetUser
 
         # --- Update ---
-        self.UpdateUser = self.user_repo.UpdateUser
+        self.UpdateUser = self._user.UpdateUser
 
     # --- Read ---
     async def CheckUserExists(self, chat_id: int) -> bool:
@@ -28,7 +28,7 @@ class UserService:
         return result is not None
 
     async def GetVerifiedUsersChatId(self) -> list[int]:
-        result = await self.user_repo.GetUsersOnCondition(
+        result = await self._user.GetUsersOnCondition(
             condition=User.verified.is_(True),
             column=User.chat_id,
         )
@@ -36,7 +36,7 @@ class UserService:
         return result
 
     async def GetChatIdByUsername(self, username: str) -> int | None:
-        result = await self.user_repo.GetUsersOnCondition(
+        result = await self._user.GetUsersOnCondition(
             condition=User.username == username,
             column=User.chat_id,
         )

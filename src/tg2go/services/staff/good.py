@@ -6,19 +6,19 @@ from tg2go.db.session import AsyncSessionLocal
 
 class StaffGoodService:
     def __init__(self, good_repo: GoodRepository):
-        self.good_repo = good_repo
+        self._good = good_repo
 
         # --- Create ---
-        self.InsertNewGood = self.good_repo.InsertNewGood
+        self.InsertNewGood = self._good.InsertNewGood
 
         # --- Read ---
-        self.GetAvailableGoods = self.good_repo.GetAvailableGoods
+        self.GetAvailableGoods = self._good.GetAvailableGoods
 
         # --- Update ---
-        self.UpdateGood = self.good_repo.UpdateGood
+        self.UpdateGood = self._good.UpdateGood
 
         # --- Delete ---
-        self.InvalidateGood = self.good_repo.InvalidateGood
+        self.InvalidateGood = self._good.InvalidateGood
 
     @staticmethod
     def Create() -> StaffGoodService:

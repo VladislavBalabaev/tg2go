@@ -7,12 +7,12 @@ from tg2go.db.session import AsyncSessionLocal
 
 class ClientGoodService:
     def __init__(self, cat_repo: CategoryRepository, good_repo: GoodRepository):
-        self.cat_repo = cat_repo
-        self.good_repo = good_repo
+        self._cat = cat_repo
+        self._good = good_repo
 
         # --- Read ---
-        self.GetCategories = self.cat_repo.GetCategories
-        self.GetAvailableGoods = self.good_repo.GetAvailableGoods
+        self.GetCategories = self._cat.GetCategories
+        self.GetAvailableGoods = self._good.GetAvailableGoods
 
     @staticmethod
     def Create() -> ClientGoodService:

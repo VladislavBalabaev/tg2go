@@ -37,12 +37,12 @@ class ClientOrderService:
     ):
         self.chat_id = chat_id
         self.order_id = order_id
-        self.good = good_repo
-        self.order = order_repo
-        self.user = user_repo
+        self._good = good_repo
+        self._order = order_repo
+        self._user = user_repo
 
     async def _GetOrder(self) -> Order:
-        order = await self.order.GetOrder(self.order_id)
+        order = await self._order.GetOrder(self.order_id)
 
         if order is None:
             raise ValueError(f"Order(order_id={self.order_id}) doesn't exist.")

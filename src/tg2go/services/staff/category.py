@@ -6,19 +6,19 @@ from tg2go.db.session import AsyncSessionLocal
 
 class StaffCategoryService:
     def __init__(self, cat_repo: CategoryRepository):
-        self.cat_repo = cat_repo
+        self._cat = cat_repo
 
         # --- Create ---
-        self.InsertNewCategory = self.cat_repo.InsertNewCategory
+        self.InsertNewCategory = self._cat.InsertNewCategory
 
         # --- Read ---
-        self.GetCategories = self.cat_repo.GetCategories
+        self.GetCategories = self._cat.GetCategories
 
         # --- Update ---
-        self.UpdateCategoryName = self.cat_repo.UpdateCategoryName
+        self.UpdateCategoryName = self._cat.UpdateCategoryName
 
         # --- Delete ---
-        self.InvalidateCategory = self.cat_repo.InvalidateCategory
+        self.InvalidateCategory = self._cat.InvalidateCategory
 
     @staticmethod
     def Create() -> StaffCategoryService:
