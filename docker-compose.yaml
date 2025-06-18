@@ -1,9 +1,9 @@
-name: nespresso
+name: tg2go
 
 services:
   db:
     image: postgres:15
-    container_name: nespresso_db
+    container_name: tg2go_db
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -15,7 +15,7 @@ services:
       timeout: 5s
       retries: 6
     networks:
-      - nespresso_network
+      - tg2go_network
     ports:
       - "5432:5432"
     volumes:
@@ -25,7 +25,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nespresso_bot
+    container_name: tg2go_bot
     depends_on:
       db:
         condition: service_healthy
@@ -35,13 +35,13 @@ services:
       - ./data/logs/bot:/usr/src/app/data/logs/bot
       - ./data/recsys:/usr/src/app/data/recsys
     networks:
-      - nespresso_network
+      - tg2go_network
     stdin_open: true              # Keeps STDIN open
     tty: true                     # Allocates a pseudo-TTY
-    command: python -m nespresso
+    command: python -m tg2go
 
 networks:
-  nespresso_network:
+  tg2go_network:
     driver: bridge
 
 volumes:
