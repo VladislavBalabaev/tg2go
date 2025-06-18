@@ -1,8 +1,9 @@
 from aiogram import types
 from aiogram.filters import Filter
 
-from tg2go.bot.lib.message.checks import CheckVerified
 from tg2go.core.configs.constants import ADMIN_CHAT_IDS
+from tg2go.db.models.user import User
+from tg2go.services.user import GetUserService
 
 
 class AdminFilter(Filter):
@@ -12,4 +13,23 @@ class AdminFilter(Filter):
 
 class VerifiedFilter(Filter):
     async def __call__(self, message: types.Message) -> bool:
-        return await CheckVerified(message.chat.id)
+        ctx = GetUserService()
+
+        verified = await ctx.GetUser(
+            chat_id=message.chat.id,
+            column=User.verified,
+        )
+
+        return verified if verified else False
+
+
+class HasOrderFilter(Filter):
+    async def __call__(self, message: types.Message) -> bool:
+        ctx = GetUserService()
+
+        current_order_id = await ctx.GetUser(
+            chat_id=message.chat.id,
+            column=User.current_order_id,
+        )
+
+        return current_order_id is not None

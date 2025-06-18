@@ -30,6 +30,7 @@ class ContextIO(str, Enum):
 class SignIO(str, Enum):
     In = "\033[35m>>\033[0m"
     Out = "\033[36m<<\033[0m"
+    On = "\033[37m<>\033[0m"
 
 
 async def SendDocument(
