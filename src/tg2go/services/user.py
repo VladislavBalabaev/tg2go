@@ -1,5 +1,6 @@
 from tg2go.db.models.user import User
 from tg2go.db.repositories.user import UserRepository
+from tg2go.db.session import AsyncSessionLocal
 
 
 class UserService:
@@ -25,9 +26,9 @@ class UserService:
 
         return result is not None
 
-    async def GetConfirmedUsersChatId(self) -> list[int]:
+    async def GetVerifiedUsersChatId(self) -> list[int]:
         result = await self.GetUsersOnCondition(
-            condition=User.confirmed,
+            condition=User.verified,
             column=User.chat_id,
         )
 
@@ -40,3 +41,7 @@ class UserService:
         )
 
         return int(result[0]) if result else None
+
+
+def GetUserService() -> UserService:
+    return UserService(UserRepository(AsyncSessionLocal))

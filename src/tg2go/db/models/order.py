@@ -5,7 +5,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, NewType
 from uuid import UUID, uuid4
 
-from sqlalchemy import Enum as SqlEnum, ForeignKey, Numeric, Text
+from sqlalchemy import BigInteger, Enum as SqlEnum, ForeignKey, Numeric, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
@@ -46,6 +46,16 @@ class Order(Base, TimestampMixin):
         nullable=False,
     )
 
+    # --- messages ---
+    order_message_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        nullable=True,
+    )
+    good_message_id: Mapped[int | None] = mapped_column(
+        BigInteger,
+        nullable=True,
+    )
+
     # --- description ---
     status: Mapped[OrderStatus] = mapped_column(
         SqlEnum(OrderStatus),
@@ -57,11 +67,11 @@ class Order(Base, TimestampMixin):
         default=Decimal("0.0"),
         nullable=False,
     )
-    internal_comment: Mapped[str] = mapped_column(
+    internal_comment: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
     )
-    client_comment: Mapped[str] = mapped_column(
+    client_comment: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
     )
@@ -76,7 +86,3 @@ class Order(Base, TimestampMixin):
         cascade="all, delete-orphan",
         order_by="OrderHistory.updated_at",
     )
-
-
-def CreateOrder(chat_id: int) -> Order:
-    return Order(chat_id=chat_id)

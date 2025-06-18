@@ -11,7 +11,7 @@ from aiolimiter import AsyncLimiter
 from tg2go.bot.lib.chat.block import UserBlockedBot
 from tg2go.bot.lib.chat.username import GetChatUserLoggingPart
 from tg2go.bot.lifecycle.creator import bot
-from tg2go.db.services.user_context import GetContextService
+from tg2go.services.user import GetUserService
 
 
 class ContextIO(str, Enum):
@@ -124,7 +124,7 @@ async def SendMessagesToGroup(messages: list[PersonalMsg]) -> None:
 
 
 async def _CheckNewUser(chat_id: int) -> None:
-    ctx = GetContextService()
+    ctx = GetUserService()
     exists = await ctx.CheckUserExists(chat_id)
 
     if not exists:
@@ -151,3 +151,17 @@ async def ReceiveCallback(query: types.CallbackQuery, data: CallbackData) -> Non
         f"{part} {SignIO.In.value} {ContextIO.Callback.value} {data.__prefix__}"
     )
     logging.debug(f"{part}, model_dump={data.model_dump()}")
+
+
+async def DeleteMessage(chat_id: int, message_id: int) -> None:
+    try:
+        await bot.delete_message(chat_id=chat_id, message_id=message_id)
+    except TelegramForbiddenError:
+        add = ContextIO.Blocked
+        await UserBlockedBot(chat_id)
+
+    except TelegramBadRequest:
+        add = ContextIO.BadRequest
+
+    part = await GetChatUserLoggingPart(chat_id)
+    logging.info(f"{part}{add.value} Message(message_id={message_id}) deleted.")

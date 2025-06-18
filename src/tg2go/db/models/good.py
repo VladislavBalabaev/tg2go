@@ -70,10 +70,3 @@ class Good(Base, TimestampMixin):
         back_populates="good",
         cascade="all, delete-orphan",
     )
-
-    # TODO: add __repr__ to get string representation of a good directly!
-
-
-# TODO: maybe create smth like:
-# def CreateOrder(chat_id: int) -> Order:
-#     return Order(chat_id=chat_id)

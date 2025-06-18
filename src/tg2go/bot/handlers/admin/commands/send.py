@@ -6,7 +6,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 from tg2go.bot.lib.message.filters import AdminFilter
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
-from tg2go.db.services.user_context import GetContextService
+from tg2go.services.user import GetUserService
 
 router = Router()
 
@@ -29,7 +29,7 @@ async def CommandSend(
         )
         return
 
-    ctx = GetContextService()
+    ctx = GetUserService()
     chat_id = await ctx.GetChatIdByUsername(command.args.replace("@", "").strip())
 
     if chat_id is None:

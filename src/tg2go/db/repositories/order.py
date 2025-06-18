@@ -1,10 +1,17 @@
 import logging
+from typing import TypeVar, overload
 
+from sqlalchemy import select, update
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.orm.attributes import InstrumentedAttribute
+from sqlalchemy.sql.elements import ColumnElement
 
 from tg2go.db.models.good import Good, GoodId
-from tg2go.db.models.order import CreateOrder, Order, OrderId
+from tg2go.db.models.order import Order, OrderId
 from tg2go.db.models.order_item import OrderItem
+
+T = TypeVar("T")
 
 
 class OrderRepository:
@@ -13,7 +20,10 @@ class OrderRepository:
 
     # ----- Create -----
     async def CreateNewOrder(self, chat_id: int) -> OrderId:
-        order = CreateOrder(chat_id=chat_id)
+        def CreateOrder(chat_id: int) -> Order:
+            return Order(chat_id=chat_id)
+
+        order = CreateOrder(chat_id)
 
         async with self.session() as session:
             session.add(order)
@@ -23,7 +33,86 @@ class OrderRepository:
 
         return order.order_id
 
+    # ----- Read -----
+    @overload
+    async def GetOrdersOnCondition(
+        self,
+        condition: ColumnElement[bool] | InstrumentedAttribute[bool],
+        column: None = None,
+    ) -> list[Order]: ...
+
+    @overload
+    async def GetOrdersOnCondition(
+        self,
+        condition: ColumnElement[bool] | InstrumentedAttribute[bool],
+        column: InstrumentedAttribute[T],
+    ) -> list[T]: ...
+
+    async def GetOrdersOnCondition(
+        self,
+        condition: ColumnElement[bool] | InstrumentedAttribute[bool],
+        column: InstrumentedAttribute[T] | None = None,
+    ) -> list[Order] | list[T]:
+        selection = Order
+        if column is not None:
+            selection = getattr(Order, column.key)
+
+        async with self.session() as session:
+            result = await session.execute(select(selection).where(condition))
+
+            return list(result.scalars().all())
+
+    @overload
+    async def GetOrder(
+        self,
+        order_id: OrderId,
+        column: None = None,
+    ) -> Order | None: ...
+
+    @overload
+    async def GetOrder(
+        self,
+        order_id: OrderId,
+        column: InstrumentedAttribute[T],
+    ) -> T | None: ...
+
+    async def GetOrder(
+        self,
+        order_id: OrderId,
+        column: InstrumentedAttribute[T] | None = None,
+    ) -> Order | T | None:
+        result = await self.GetOrdersOnCondition(
+            condition=Order.order_id == order_id,
+            column=column,
+        )
+        return result[0] if result else None
+
     # ----- Update -----
+    async def UpdateOrder(
+        self,
+        order_id: OrderId,
+        column: InstrumentedAttribute[T],
+        value: T,
+    ) -> None:
+        async with self.session() as session:
+            result = await session.execute(
+                update(Order)
+                .where(Order.order_id == order_id)
+                .values({column.key: value})
+            )
+
+            if result.rowcount == 0:
+                logging.error(
+                    f"Failed to update: '{column}={value}'. No Order(order_id={order_id}) found."
+                )
+                raise NoResultFound()
+
+            await session.commit()
+            logging.info(
+                f"Order(order_id={order_id}) updated: '{column}={value}' successfully."
+            )
+
+    # ----- Order-Good Logic -----
     async def AddGoodToOrder(self, order_id: OrderId, good_id: GoodId) -> None:
         async with self.session() as session:
             order = await session.get(Order, order_id)

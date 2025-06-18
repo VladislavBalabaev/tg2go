@@ -2,7 +2,7 @@ import logging
 
 from tg2go.bot.lifecycle.creator import bot
 from tg2go.db.models.user import User
-from tg2go.db.services.user_context import GetContextService
+from tg2go.services.user import GetUserService
 
 
 async def GetTgUsername(chat_id: int) -> str | None:
@@ -10,7 +10,7 @@ async def GetTgUsername(chat_id: int) -> str | None:
         chat = await bot.get_chat(chat_id)
         username = chat.username
 
-        ctx = GetContextService()
+        ctx = GetUserService()
         db_username = await ctx.GetUser(
             chat_id=chat_id,
             column=User.username,

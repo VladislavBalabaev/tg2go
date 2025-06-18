@@ -40,6 +40,11 @@ class OrderHistory(Base):
         index=True,
         nullable=False,
     )
+    chat_id: Mapped[int] = mapped_column(
+        ForeignKey("users.chat_id"),
+        index=True,
+        nullable=False,
+    )
 
     # --- description ---
     status: Mapped[OrderStatus] = mapped_column(
@@ -50,11 +55,11 @@ class OrderHistory(Base):
         Numeric(10, 2),
         nullable=False,
     )
-    internal_comment: Mapped[str] = mapped_column(
+    internal_comment: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
     )
-    client_comment: Mapped[str] = mapped_column(
+    client_comment: Mapped[str | None] = mapped_column(
         Text,
         nullable=True,
     )
@@ -77,6 +82,7 @@ def _SaveToOrderHistoryOnInsert(
 ) -> None:
     stmt = insert(OrderHistory).values(
         order_id=target.order_id,
+        chat_id=target.chat_id,
         status=target.status,
         total_price_rub=target.total_price_rub,
         internal_comment=target.internal_comment,
@@ -98,6 +104,7 @@ def _SaveToOrderHistoryOnUpdate(
 ) -> None:
     stmt = insert(OrderHistory).values(
         order_id=target.order_id,
+        chat_id=target.chat_id,
         status=target.status,
         total_price_rub=target.total_price_rub,
         internal_comment=target.internal_comment,

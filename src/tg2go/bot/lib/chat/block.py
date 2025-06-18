@@ -2,11 +2,11 @@ import logging
 
 from tg2go.bot.lib.chat.username import GetChatUserLoggingPart
 from tg2go.db.models.user import User
-from tg2go.db.services.user_context import GetContextService
+from tg2go.services.user import GetUserService
 
 
 async def CheckIfBlocked(chat_id: int) -> bool:
-    ctx = GetContextService()
+    ctx = GetUserService()
     blocked = await ctx.GetUser(chat_id=chat_id, column=User.blocked)
 
     if blocked:
@@ -17,7 +17,7 @@ async def CheckIfBlocked(chat_id: int) -> bool:
 
 
 async def BlockUser(chat_id: int) -> None:
-    ctx = GetContextService()
+    ctx = GetUserService()
 
     await ctx.UpdateUser(
         chat_id=chat_id,
@@ -30,7 +30,7 @@ async def BlockUser(chat_id: int) -> None:
 
 
 async def UnblockUser(chat_id: int) -> None:
-    ctx = GetContextService()
+    ctx = GetUserService()
 
     await ctx.UpdateUser(
         chat_id=chat_id,

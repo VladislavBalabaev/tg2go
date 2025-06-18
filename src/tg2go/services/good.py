@@ -1,4 +1,5 @@
 from tg2go.db.repositories.good import GoodRepository
+from tg2go.db.session import AsyncSessionLocal
 
 
 class GoodService:
@@ -16,3 +17,7 @@ class GoodService:
 
         # --- Delete ---
         self.InvalidateGood = self.good_repo.InvalidateGood
+
+
+def GetGoodService() -> GoodService:
+    return GoodService(GoodRepository(AsyncSessionLocal))
