@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from decimal import Decimal
 
 from tg2go.bot.lib.message.io import DeleteMessage
@@ -24,7 +26,7 @@ async def CreateNewOrder(chat_id: int) -> OrderId:
     return order_id
 
 
-class OrderService:
+class ClientOrderService:
     def __init__(
         self,
         chat_id: int,
@@ -92,21 +94,23 @@ class OrderService:
         # TODO: FinishOrderOrdering
         ...
 
+    @staticmethod
+    async def Create(chat_id: int) -> ClientOrderService:
+        good_repo = GoodRepository(AsyncSessionLocal)
+        order_repo = OrderRepository(AsyncSessionLocal)
+        user_repo = UserRepository(AsyncSessionLocal)
 
-async def GetOrderService(chat_id: int) -> OrderService:
-    good_repo = GoodRepository(AsyncSessionLocal)
-    order_repo = OrderRepository(AsyncSessionLocal)
-    user_repo = UserRepository(AsyncSessionLocal)
+        order_id = await user_repo.GetUser(
+            chat_id=chat_id, column=User.current_order_id
+        )
 
-    order_id = await user_repo.GetUser(chat_id=chat_id, column=User.current_order_id)
+        if order_id is None:
+            raise ValueError(f"User(chat_id={chat_id}) doesn't have current order.")
 
-    if order_id is None:
-        raise ValueError(f"User(chat_id={chat_id}) doesn't have current order.")
-
-    return OrderService(
-        chat_id=chat_id,
-        order_id=order_id,
-        good_repo=good_repo,
-        order_repo=order_repo,
-        user_repo=user_repo,
-    )
+        return ClientOrderService(
+            chat_id=chat_id,
+            order_id=order_id,
+            good_repo=good_repo,
+            order_repo=order_repo,
+            user_repo=user_repo,
+        )

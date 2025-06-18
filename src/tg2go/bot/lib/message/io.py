@@ -11,7 +11,7 @@ from aiolimiter import AsyncLimiter
 from tg2go.bot.lib.chat.block import UserBlockedBot
 from tg2go.bot.lib.chat.username import GetChatUserLoggingPart
 from tg2go.bot.lifecycle.creator import bot
-from tg2go.services.user import GetUserService
+from tg2go.services.user import UserService
 
 
 class ContextIO(str, Enum):
@@ -125,7 +125,7 @@ async def SendMessagesToGroup(messages: list[PersonalMsg]) -> None:
 
 
 async def _CheckNewUser(chat_id: int) -> None:
-    ctx = GetUserService()
+    ctx = UserService.Create()
     exists = await ctx.CheckUserExists(chat_id)
 
     if not exists:

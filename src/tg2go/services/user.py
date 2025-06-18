@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from tg2go.db.models.user import User
 from tg2go.db.repositories.user import UserRepository
 from tg2go.db.session import AsyncSessionLocal
@@ -41,6 +43,6 @@ class UserService:
 
         return int(result[0]) if result else None
 
-
-def GetUserService() -> UserService:
-    return UserService(UserRepository(AsyncSessionLocal))
+    @staticmethod
+    def Create() -> UserService:
+        return UserService(UserRepository(AsyncSessionLocal))

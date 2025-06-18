@@ -8,7 +8,7 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemo
 from tg2go.bot.lib.message.io import ContextIO, SendDocument, SendMessage
 from tg2go.core.configs.paths import PATH_TERMS_OF_USE
 from tg2go.db.models.user import User
-from tg2go.services.user import GetUserService
+from tg2go.services.user import UserService
 
 router = Router()
 
@@ -65,7 +65,7 @@ async def CommandStartGetPhoneNumber(message: types.Message, state: FSMContext) 
         )
         return
 
-    ctx = GetUserService()
+    ctx = UserService.Create()
     await ctx.UpdateUser(
         chat_id=message.chat.id,
         column=User.phone_number,

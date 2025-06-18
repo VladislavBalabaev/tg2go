@@ -9,7 +9,7 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from tg2go.bot.lib.chat.block import BlockUser, CheckIfBlocked, UnblockUser
 from tg2go.bot.lib.message.filters import AdminFilter
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
-from tg2go.services.user import GetUserService
+from tg2go.services.user import UserService
 
 router = Router()
 
@@ -54,7 +54,7 @@ async def CommandBlocking(
         )
         return
 
-    ctx = GetUserService()
+    ctx = UserService.Create()
     chat_id = await ctx.GetChatIdByUsername(command.args.replace("@", "").strip())
 
     if chat_id is None:

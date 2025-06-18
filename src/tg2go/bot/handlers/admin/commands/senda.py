@@ -6,7 +6,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 from tg2go.bot.lib.message.filters import AdminFilter
 from tg2go.bot.lib.message.io import PersonalMsg, SendMessage, SendMessagesToGroup
-from tg2go.services.user import GetUserService
+from tg2go.services.user import UserService
 
 router = Router()
 
@@ -25,7 +25,7 @@ async def CommandSenda(message: types.Message, state: FSMContext) -> None:
 async def CommandSendaMessage(message: types.Message, state: FSMContext) -> None:
     assert message.text is not None
 
-    ctx = GetUserService()
+    ctx = UserService.Create()
     chat_ids = await ctx.GetVerifiedUsersChatId()
 
     messages = [PersonalMsg(chat_id=chat_id, text=message.text) for chat_id in chat_ids]

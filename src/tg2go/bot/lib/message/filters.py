@@ -3,7 +3,7 @@ from aiogram.filters import Filter
 
 from tg2go.core.configs.constants import ADMIN_CHAT_IDS
 from tg2go.db.models.user import User
-from tg2go.services.user import GetUserService
+from tg2go.services.user import UserService
 
 
 class AdminFilter(Filter):
@@ -13,7 +13,7 @@ class AdminFilter(Filter):
 
 class VerifiedFilter(Filter):
     async def __call__(self, message: types.Message) -> bool:
-        ctx = GetUserService()
+        ctx = UserService.Create()
 
         verified = await ctx.GetUser(
             chat_id=message.chat.id,
@@ -25,7 +25,7 @@ class VerifiedFilter(Filter):
 
 class HasOrderFilter(Filter):
     async def __call__(self, message: types.Message) -> bool:
-        ctx = GetUserService()
+        ctx = UserService.Create()
 
         current_order_id = await ctx.GetUser(
             chat_id=message.chat.id,
