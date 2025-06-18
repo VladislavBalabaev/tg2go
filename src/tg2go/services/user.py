@@ -11,7 +11,6 @@ class UserService:
         self.CreateUser = self.user_repo.CreateUser
 
         # --- Read ---
-        self.GetUsersOnCondition = self.user_repo.GetUsersOnCondition
         self.GetUser = self.user_repo.GetUser
 
         # --- Update ---
@@ -27,15 +26,15 @@ class UserService:
         return result is not None
 
     async def GetVerifiedUsersChatId(self) -> list[int]:
-        result = await self.GetUsersOnCondition(
-            condition=User.verified,
+        result = await self.user_repo.GetUsersOnCondition(
+            condition=User.verified.is_(True),
             column=User.chat_id,
         )
 
         return result
 
     async def GetChatIdByUsername(self, username: str) -> int | None:
-        result = await self.GetUsersOnCondition(
+        result = await self.user_repo.GetUsersOnCondition(
             condition=User.username == username,
             column=User.chat_id,
         )
