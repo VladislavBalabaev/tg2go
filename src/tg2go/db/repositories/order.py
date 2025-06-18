@@ -18,7 +18,7 @@ class OrderRepository:
     def __init__(self, session: async_sessionmaker[AsyncSession]):
         self.session = session
 
-    # ----- Create -----
+    # --- Create ---
     async def CreateNewOrder(self, chat_id: int) -> OrderId:
         def CreateOrder(chat_id: int) -> Order:
             return Order(chat_id=chat_id)
@@ -33,7 +33,7 @@ class OrderRepository:
 
         return order.order_id
 
-    # ----- Read -----
+    # --- Read ---
     @overload
     async def GetOrdersOnCondition(
         self,
@@ -87,7 +87,7 @@ class OrderRepository:
         )
         return result[0] if result else None
 
-    # ----- Update -----
+    # --- Update ---
     async def UpdateOrder(
         self,
         order_id: OrderId,
@@ -112,7 +112,7 @@ class OrderRepository:
                 f"Order(order_id={order_id}) updated: '{column}={value}' successfully."
             )
 
-    # ----- Order-Good Logic -----
+    # --- Order-Good Logic ---
     async def AddGoodToOrder(self, order_id: OrderId, good_id: GoodId) -> None:
         async with self.session() as session:
             order = await session.get(Order, order_id)
@@ -146,36 +146,37 @@ class OrderRepository:
 
             await session.commit()
 
-    async def RemoveGoodFromOrder(self, order_id: OrderId, good_id: GoodId) -> None:
-        async with self.session() as session:
-            order = await session.get(Order, order_id)
-            good = await session.get(Good, good_id)
+    # TODO: AddOneItem, RemoveOneItem, AddItemFully
+    # async def ReduceItemInOrder(self, order_id: OrderId, order_item_id: OrderItemId) -> None:
+    #     async with self.session() as session:
+    #         order = await session.get(Order, order_id)
+    #         order_item = await session.get(OrderItem, order_item_id)
 
-            if order is None:
-                raise ValueError(
-                    f"No such Order(order_id={order_id}) when removing good from order."
-                )
-            if good is None:
-                raise ValueError(
-                    f"No such Good(good_id={good_id}) when removing good from order."
-                )
+    #         if order is None:
+    #             raise ValueError(
+    #                 f"No such Order(order_id={order_id}) when removing good from order."
+    #             )
+    #         if order_item is None:
+    #             raise ValueError(
+    #                 f"No such OrderItem(order_item_id={order_item_id}) when removing good from order."
+    #             )
 
-            for item in order.order_items:
-                if good.good_id == item.good_id:
-                    item.quantity -= 1
-                    break
-            else:
-                raise ValueError(f"No {good} in {order} when removing good from order.")
+    #         for item in order.order_items:
+    #             if order_item.order_item_id == item.order_item_id:
+    #                 item.quantity -= 1
+    #                 break
+    #         else:
+    #             raise ValueError(f"No {order_item} in {order} when removing item from order.")
 
-            order.total_price_rub -= item.unit_price_rub
+    #         order.total_price_rub -= item.unit_price_rub
 
-            if item.quantity == 0:
-                await session.delete(item)
+    #         if item.quantity == 0:
+    #             await session.delete(item)
 
-            if order.total_price_rub < 0:
-                await session.rollback()
-                raise ValueError(f"Total price RUB is negative for {order}")
+    #         if order.total_price_rub < 0:
+    #             await session.rollback()
+    #             raise ValueError(f"Total price RUB is negative for {order}")
 
-            logging.info(f"After removing good {good} order is {order}")
+    #         logging.info(f"After removing {order_item} order is {order}")
 
-            await session.commit()
+    #         await session.commit()

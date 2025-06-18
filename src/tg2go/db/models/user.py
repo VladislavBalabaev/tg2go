@@ -34,7 +34,7 @@ class User(Base, TimestampMixin):
     )
 
     # --- order ---
-    order_id: Mapped[OrderId | None] = mapped_column(
+    current_order_id: Mapped[OrderId | None] = mapped_column(
         nullable=True,
     )
 

@@ -16,7 +16,7 @@ class UserRepository:
     def __init__(self, session: async_sessionmaker[AsyncSession]):
         self.session = session
 
-    # ----- Create -----
+    # --- Create ---
     async def CreateUser(self, chat_id: int) -> None:
         async with self.session() as session:
             try:
@@ -31,7 +31,7 @@ class UserRepository:
                     f"User(chat_id={chat_id}) already exists. Creation failed."
                 )
 
-    # ----- Read -----
+    # --- Read ---
     @overload
     async def GetUsersOnCondition(
         self,
@@ -85,7 +85,7 @@ class UserRepository:
         )
         return result[0] if result else None
 
-    # ----- Update -----
+    # --- Update ---
     async def UpdateUser(
         self,
         chat_id: int,

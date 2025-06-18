@@ -1,11 +1,13 @@
 import logging
 from typing import TypeVar
 
-from sqlalchemy import desc, select, update
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
+from tg2go.db.models.category import Category, CategoryId
 from tg2go.db.models.good import Good, GoodId
 
 T = TypeVar("T")
@@ -15,7 +17,7 @@ class GoodRepository:
     def __init__(self, session: async_sessionmaker[AsyncSession]):
         self.session = session
 
-    # ----- Create -----
+    # --- Create ---
     async def InsertNewGood(self, good: Good) -> None:
         async with self.session() as session:
             try:
@@ -27,15 +29,22 @@ class GoodRepository:
                 logging.error(f"{good} already exists. Insertion failed.")
                 raise
 
-    async def GetAvailableGoods(self) -> list[Good]:
+    # --- Read ---
+    async def GetAvailableGoods(self, category_id: CategoryId) -> list[Good]:
         async with self.session() as session:
             result = await session.execute(
-                select(Good).where(Good.available).order_by(desc(Good.category))
+                select(Good)
+                .options(selectinload(Good.category))
+                .join(Good.category)
+                .where(
+                    Good.available.is_(True),
+                    Category.category_id == category_id,
+                )
             )
 
             return list(result.scalars().all())
 
-    # ----- Update -----
+    # --- Update ---
     async def UpdateGood(
         self,
         good_id: GoodId,
@@ -58,7 +67,7 @@ class GoodRepository:
             f"Good(good_id={good_id}) updated: '{column}={value}' successfully."
         )
 
-    # ----- Delete -----
+    # --- Delete ---
     async def InvalidateGood(self, good_id: GoodId) -> None:
         async with self.session() as session:
             result = await session.execute(

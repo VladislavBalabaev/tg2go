@@ -1,0 +1,76 @@
+import logging
+from typing import TypeVar
+
+from sqlalchemy import desc, select, update
+from sqlalchemy.exc import IntegrityError, NoResultFound
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from tg2go.db.models.category import Category, CategoryId
+
+T = TypeVar("T")
+
+
+class CategoryRepository:
+    def __init__(self, session: async_sessionmaker[AsyncSession]):
+        self.session = session
+
+    # --- Create ---
+    async def InsertNewCategory(self, category: Category) -> None:
+        async with self.session() as session:
+            try:
+                session.add(category)
+                await session.commit()
+                logging.info(f"{category} inserted successfully.")
+            except IntegrityError:
+                await session.rollback()
+                logging.error(f"{category} already exists. Insertion failed.")
+                raise
+
+    # --- Read ---
+    async def GetCategories(self) -> list[Category]:
+        async with self.session() as session:
+            result = await session.execute(
+                select(Category)
+                .where(Category.valid.is_(True))
+                .order_by(desc(Category.index))
+            )
+
+            return list(result.scalars().all())
+
+    # --- Update ---
+    async def UpdateCategoryName(self, category_id: CategoryId, name: str) -> None:
+        async with self.session() as session:
+            result = await session.execute(
+                update(Category)
+                .where(Category.category_id == category_id)
+                .values({Category.name: name})
+            )
+
+            if result.rowcount == 0:
+                raise NoResultFound(
+                    f"Failed to update: '{Category.name}={name}'. No Category(category_id={category_id}) found."
+                )
+
+            await session.commit()
+
+        logging.info(
+            f"Category(category_id={category_id}) updated: '{Category.name}={name}' successfully."
+        )
+
+    # --- Delete ---
+    async def InvalidateCategory(self, category_id: CategoryId) -> None:
+        async with self.session() as session:
+            result = await session.execute(
+                update(Category)
+                .where(Category.category_id == category_id)
+                .values({Category.valid: False})
+            )
+
+            if result.rowcount == 0:
+                raise NoResultFound(
+                    f"Failed to invalidate category. No Category(category_id={category_id}) found."
+                )
+
+            await session.commit()
+
+        logging.info(f"Category(category_id={category_id}) is invalidated.")

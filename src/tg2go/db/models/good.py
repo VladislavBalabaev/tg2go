@@ -1,26 +1,21 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from enum import Enum
 from typing import TYPE_CHECKING, NewType
 from uuid import UUID, uuid4
 
-from sqlalchemy import Boolean, Enum as SqlEnum, Numeric, Text
+from sqlalchemy import Boolean, Numeric, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
 from tg2go.db.models.common.time import TimestampMixin
 
 if TYPE_CHECKING:
+    from tg2go.db.models.category import Category
     from tg2go.db.models.order_item import OrderItem
 
 
 GoodId = NewType("GoodId", UUID)
-
-
-# TODO: add categories
-class GoodCategory(str, Enum):
-    pending = "vkusnovoe"
 
 
 class Good(Base, TimestampMixin):
@@ -38,15 +33,15 @@ class Good(Base, TimestampMixin):
         Numeric(10, 2),
         nullable=False,
     )
-    category: Mapped[GoodCategory] = mapped_column(
-        SqlEnum(GoodCategory),
-        nullable=False,
-    )
-    description: Mapped[str] = mapped_column(
+    name: Mapped[str] = mapped_column(
         Text,
         nullable=False,
     )
     short_description: Mapped[str] = mapped_column(
+        Text,
+        nullable=False,
+    )
+    description: Mapped[str] = mapped_column(
         Text,
         nullable=False,
     )
@@ -66,6 +61,8 @@ class Good(Base, TimestampMixin):
     )
 
     # --- relationship ---
+    category: Mapped[Category] = relationship(back_populates="goods")
+
     order_items: Mapped[list[OrderItem]] = relationship(
         back_populates="good",
         cascade="all, delete-orphan",
