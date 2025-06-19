@@ -1,19 +1,18 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import TYPE_CHECKING, NewType
+from typing import TYPE_CHECKING
 
 from sqlalchemy import BigInteger, ForeignKey, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
 from tg2go.db.models.common.time import TimestampMixin
+from tg2go.db.models.common.types import GoodId, OrderId
 
 if TYPE_CHECKING:
-    from tg2go.db.models.good import Good, GoodId
-    from tg2go.db.models.order import Order, OrderId
-
-OrderItemId = NewType("OrderItemId", int)
+    from tg2go.db.models.good import Good
+    from tg2go.db.models.order import Order
 
 
 class OrderItem(Base, TimestampMixin):
@@ -45,5 +44,11 @@ class OrderItem(Base, TimestampMixin):
     )
 
     # --- relationship ---
-    order: Mapped[Order] = relationship(back_populates="order_items")
-    good: Mapped[Good] = relationship(back_populates="order_items")
+    order: Mapped[Order] = relationship(
+        "Order",
+        back_populates="order_items",
+    )
+    good: Mapped[Good] = relationship(
+        "Good",
+        back_populates="order_items",
+    )

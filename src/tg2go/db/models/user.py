@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from sqlalchemy import BigInteger, Boolean, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from tg2go.db.base import Base
 from tg2go.db.models.common.time import TimestampMixin
-
-if TYPE_CHECKING:
-    from tg2go.db.models.order import OrderId
+from tg2go.db.models.common.types import OrderId
 
 
 class User(Base, TimestampMixin):

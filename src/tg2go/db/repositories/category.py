@@ -5,7 +5,8 @@ from sqlalchemy import desc, select, update
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from tg2go.db.models.category import Category, CategoryId
+from tg2go.db.models.category import Category
+from tg2go.db.models.common.types import CategoryId
 
 T = TypeVar("T")
 
@@ -15,7 +16,9 @@ class CategoryRepository:
         self.session = session
 
     # --- Create ---
-    async def InsertNewCategory(self, category: Category) -> None:
+    async def InsertNewCategory(self, name: str, index: int) -> None:
+        category = Category(name=name, index=index)
+
         async with self.session() as session:
             try:
                 session.add(category)
@@ -27,7 +30,7 @@ class CategoryRepository:
                 raise
 
     # --- Read ---
-    async def GetCategories(self) -> list[Category]:
+    async def GetSortedCategories(self) -> list[Category]:
         async with self.session() as session:
             result = await session.execute(
                 select(Category)
@@ -35,7 +38,10 @@ class CategoryRepository:
                 .order_by(desc(Category.index))
             )
 
-            return list(result.scalars().all())
+            categories = list(result.scalars().all())
+            categories.sort(key=lambda x: x.index)
+
+            return categories
 
     # --- Update ---
     async def UpdateCategoryName(self, category_id: CategoryId, name: str) -> None:

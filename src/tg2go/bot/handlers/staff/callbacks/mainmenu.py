@@ -1,0 +1,89 @@
+from aiogram import F, Router, types
+
+from tg2go.bot.handlers.staff.callbacks.settings import StaffMenuSettings
+from tg2go.bot.handlers.staff.common import (
+    StaffAction,
+    StaffCallbackData,
+    StaffHeaderText,
+    StaffKeyboard,
+    StaffMenu,
+)
+from tg2go.bot.lifecycle.active import bot_state
+
+router = Router()
+
+
+def StaffMainMenu(chat_id: int) -> StaffMenu:
+    if bot_state.active:
+        text = StaffHeaderText.Active
+        actions = [StaffAction.Activate, StaffAction.Settings, StaffAction.Cancel]
+    else:
+        text = StaffHeaderText.Inactive
+        actions = [StaffAction.Deactivate, StaffAction.Cancel]
+
+    return StaffMenu(
+        text=text,
+        reply_markup=StaffKeyboard(actions=actions, chat_id=chat_id),
+    )
+
+
+@router.callback_query(StaffCallbackData.filter(F.action == StaffAction.Cancel))
+async def CommandStaffCancel(
+    callback_query: types.CallbackQuery,
+    callback_data: StaffCallbackData,
+) -> None:
+    assert isinstance(callback_query.message, types.Message)
+
+    await callback_query.message.edit_reply_markup(reply_markup=None)
+    await callback_query.answer()
+
+
+@router.callback_query(StaffCallbackData.filter(F.action == StaffAction.Activate))
+async def CommandStaffActivate(
+    callback_query: types.CallbackQuery,
+    callback_data: StaffCallbackData,
+) -> None:
+    assert isinstance(callback_query.message, types.Message)
+
+    bot_state.Activate()
+
+    menu = StaffMainMenu(callback_query.message.chat.id)
+
+    await callback_query.message.edit_text(
+        text=menu.text,
+        reply_markup=menu.reply_markup,
+    )
+    await callback_query.answer()
+
+
+@router.callback_query(StaffCallbackData.filter(F.action == StaffAction.Deactivate))
+async def CommandStaffDeactivate(
+    callback_query: types.CallbackQuery,
+    callback_data: StaffCallbackData,
+) -> None:
+    assert isinstance(callback_query.message, types.Message)
+
+    bot_state.Deactivate()
+
+    menu = StaffMainMenu(callback_query.message.chat.id)
+
+    await callback_query.message.edit_text(
+        text=menu.text,
+        reply_markup=menu.reply_markup,
+    )
+    await callback_query.answer()
+
+
+@router.callback_query(StaffCallbackData.filter(F.action == StaffAction.Settings))
+async def CommandStaffSettings(
+    callback_query: types.CallbackQuery,
+    callback_data: StaffCallbackData,
+) -> None:
+    assert isinstance(callback_query.message, types.Message)
+
+    menu = StaffMenuSettings(callback_query.message.chat.id)
+
+    await callback_query.message.edit_reply_markup(
+        reply_markup=menu.reply_markup,
+    )
+    await callback_query.answer()

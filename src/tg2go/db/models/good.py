@@ -1,21 +1,19 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import TYPE_CHECKING, NewType
-from uuid import UUID, uuid4
+from typing import TYPE_CHECKING
+from uuid import uuid4
 
-from sqlalchemy import Boolean, Numeric, Text
+from sqlalchemy import Boolean, ForeignKey, Numeric, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
 from tg2go.db.models.common.time import TimestampMixin
+from tg2go.db.models.common.types import CategoryId, GoodId
 
 if TYPE_CHECKING:
     from tg2go.db.models.category import Category
     from tg2go.db.models.order_item import OrderItem
-
-
-GoodId = NewType("GoodId", UUID)
 
 
 class Good(Base, TimestampMixin):
@@ -28,17 +26,20 @@ class Good(Base, TimestampMixin):
         nullable=False,
     )
 
-    # --- description ---
-    price_rub: Mapped[Decimal] = mapped_column(
-        Numeric(10, 2),
+    # --- primary keys ---
+    category_id: Mapped[CategoryId] = mapped_column(
+        ForeignKey("categories.category_id"),
+        index=True,
         nullable=False,
     )
+
+    # --- description ---
     name: Mapped[str] = mapped_column(
         Text,
         nullable=False,
     )
-    short_description: Mapped[str] = mapped_column(
-        Text,
+    price_rub: Mapped[Decimal] = mapped_column(
+        Numeric(10, 2),
         nullable=False,
     )
     description: Mapped[str] = mapped_column(
@@ -61,9 +62,13 @@ class Good(Base, TimestampMixin):
     )
 
     # --- relationship ---
-    category: Mapped[Category] = relationship(back_populates="goods")
+    category: Mapped[Category] = relationship(
+        "Category",
+        back_populates="goods",
+    )
 
     order_items: Mapped[list[OrderItem]] = relationship(
+        "OrderItem",
         back_populates="good",
         cascade="all, delete-orphan",
     )

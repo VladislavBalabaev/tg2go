@@ -9,7 +9,17 @@ from tg2go.bot.lib.chat.block import CheckIfBlocked
 from tg2go.bot.lib.message.io import (
     ReceiveCallback,
     ReceiveMessage,
+    SendMessage,
 )
+from tg2go.bot.lifecycle.active import bot_state
+from tg2go.core.configs.constants import ADMIN_CHAT_IDS, STAFF_CHAT_IDS
+
+
+def IsInactiveBot(chat_id: int) -> bool:
+    if chat_id in STAFF_CHAT_IDS or chat_id in ADMIN_CHAT_IDS:
+        return True
+
+    return bot_state.active
 
 
 class MessageLoggingMiddleware(BaseMiddleware):
@@ -23,6 +33,13 @@ class MessageLoggingMiddleware(BaseMiddleware):
             return
 
         await ReceiveMessage(event)
+
+        if IsInactiveBot(event.chat.id):
+            await SendMessage(
+                chat_id=event.chat.id,
+                text="Бот не активен.",
+            )
+            return
 
         return await handler(event, data)
 
@@ -44,6 +61,13 @@ class CallbackLoggingMiddleware(BaseMiddleware):
             query=event,
             data=callback_data,
         )
+
+        if IsInactiveBot(event.from_user.id):
+            await SendMessage(
+                chat_id=event.chat.id,
+                text="Бот не активен.",
+            )
+            return
 
         return await handler(event, data)
 

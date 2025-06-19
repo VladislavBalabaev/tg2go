@@ -1,32 +1,19 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from enum import Enum
-from typing import TYPE_CHECKING, NewType
-from uuid import UUID, uuid4
+from typing import TYPE_CHECKING
+from uuid import uuid4
 
 from sqlalchemy import BigInteger, Enum as SqlEnum, ForeignKey, Numeric, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
 from tg2go.db.models.common.time import TimestampMixin
+from tg2go.db.models.common.types import OrderId, OrderStatus
 
 if TYPE_CHECKING:
     from tg2go.db.models.order_history import OrderHistory
     from tg2go.db.models.order_item import OrderItem
-
-
-# TODO: add more order statuses
-class OrderStatus(str, Enum):
-    created = "created"
-    pending = "pending"
-    paid = "paid"
-    in_progress = "in_progress"
-    done = "done"
-    cancelled = "cancelled"
-
-
-OrderId = NewType("OrderId", UUID)
 
 
 class Order(Base, TimestampMixin):
@@ -78,11 +65,12 @@ class Order(Base, TimestampMixin):
 
     # --- relationship ---
     order_items: Mapped[list[OrderItem]] = relationship(
+        "OrderItem",
         back_populates="order",
         cascade="all, delete-orphan",
     )
     history: Mapped[list[OrderHistory]] = relationship(
+        "OrderHistory",
         back_populates="order",
         cascade="all, delete-orphan",
-        order_by="OrderHistory.updated_at",
     )

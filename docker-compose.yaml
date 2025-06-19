@@ -29,11 +29,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      opensearch:
-        condition: service_healthy
     volumes:
       - ./data/logs/bot:/usr/src/app/data/logs/bot
-      - ./data/recsys:/usr/src/app/data/recsys
     networks:
       - tg2go_network
     stdin_open: true              # Keeps STDIN open

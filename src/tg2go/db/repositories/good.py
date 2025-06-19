@@ -1,4 +1,5 @@
 import logging
+from decimal import Decimal
 from typing import TypeVar
 
 from sqlalchemy import select, update
@@ -7,8 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
-from tg2go.db.models.category import Category, CategoryId
-from tg2go.db.models.good import Good, GoodId
+from tg2go.db.models.category import Category
+from tg2go.db.models.common.types import CategoryId, GoodId
+from tg2go.db.models.good import Good
 
 T = TypeVar("T")
 
@@ -18,7 +20,22 @@ class GoodRepository:
         self.session = session
 
     # --- Create ---
-    async def InsertNewGood(self, good: Good) -> None:
+    async def InsertNewGood(
+        self,
+        category_id: CategoryId,
+        name: str,
+        price_rub: Decimal,
+        description: str,
+        image_url: str,
+    ) -> None:
+        good = Good(
+            name=name,
+            price_rub=price_rub,
+            description=description,
+            image_url=image_url,
+            category_id=category_id,
+        )
+
         async with self.session() as session:
             try:
                 session.add(good)

@@ -1,20 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, NewType
-from uuid import UUID, uuid4
+from typing import TYPE_CHECKING
+from uuid import uuid4
 
 from sqlalchemy import Boolean, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
 from tg2go.db.models.common.time import TimestampMixin
+from tg2go.db.models.common.types import CategoryId
 
 if TYPE_CHECKING:
     from tg2go.db.models.good import Good
-
-
-CategoryId = NewType("CategoryId", UUID)
-GoodId = NewType("GoodId", UUID)
 
 
 class Category(Base, TimestampMixin):
@@ -44,6 +41,7 @@ class Category(Base, TimestampMixin):
 
     # --- relationship ---
     goods: Mapped[list[Good]] = relationship(
+        "Good",
         back_populates="category",
         cascade="all, delete-orphan",
     )

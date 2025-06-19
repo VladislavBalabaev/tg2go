@@ -7,8 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import ColumnElement
 
-from tg2go.db.models.good import Good, GoodId
-from tg2go.db.models.order import Order, OrderId
+from tg2go.db.models.common.types import GoodId, OrderId
+from tg2go.db.models.good import Good
+from tg2go.db.models.order import Order
 from tg2go.db.models.order_item import OrderItem
 
 T = TypeVar("T")
@@ -20,10 +21,7 @@ class OrderRepository:
 
     # --- Create ---
     async def CreateNewOrder(self, chat_id: int) -> OrderId:
-        def CreateOrder(chat_id: int) -> Order:
-            return Order(chat_id=chat_id)
-
-        order = CreateOrder(chat_id)
+        order = Order(chat_id=chat_id)
 
         async with self.session() as session:
             session.add(order)

@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from sqlalchemy import (
     BigInteger,
@@ -12,16 +11,14 @@ from sqlalchemy import (
     ForeignKey,
     Numeric,
     Text,
-    event,
-    insert,
 )
-from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
+from tg2go.db.models.common.types import OrderId, OrderStatus
 
 if TYPE_CHECKING:
-    from tg2go.db.models.order import Order, OrderId, OrderStatus
+    from tg2go.db.models.order import Order
 
 
 class OrderHistory(Base):
@@ -71,49 +68,7 @@ class OrderHistory(Base):
     )
 
     # --- relationship ---
-    order: Mapped[Order] = relationship(back_populates="history")
-
-
-@event.listens_for(Order, "after_insert", propagate=True)
-def _SaveToOrderHistoryOnInsert(
-    mapper: Any,
-    connection: Connection,
-    target: Order,
-) -> None:
-    stmt = insert(OrderHistory).values(
-        order_id=target.order_id,
-        chat_id=target.chat_id,
-        status=target.status,
-        total_price_rub=target.total_price_rub,
-        internal_comment=target.internal_comment,
-        client_comment=target.client_comment,
-        updated_at=target.created_at,
-    )
-    connection.execute(stmt)
-
-    logging.info(
-        f"OrderItem(order_id={target.order_id}, updated_at={target.created_at}) is inserted upon order insertion."
-    )
-
-
-@event.listens_for(Order, "after_update", propagate=True)
-def _SaveToOrderHistoryOnUpdate(
-    mapper: Any,
-    connection: Connection,
-    target: Order,
-) -> None:
-    stmt = insert(OrderHistory).values(
-        order_id=target.order_id,
-        chat_id=target.chat_id,
-        status=target.status,
-        total_price_rub=target.total_price_rub,
-        internal_comment=target.internal_comment,
-        client_comment=target.client_comment,
-        updated_at=target.updated_at,
-    )
-
-    connection.execute(stmt)
-
-    logging.info(
-        f"OrderItem(order_id={target.order_id}, updated_at={target.created_at}) is updated upon order update."
+    order: Mapped[Order] = relationship(
+        "Order",
+        back_populates="history",
     )
