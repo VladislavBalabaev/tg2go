@@ -15,7 +15,7 @@ from tg2go.bot.lifecycle.active import bot_state
 from tg2go.core.configs.constants import ADMIN_CHAT_IDS, STAFF_CHAT_IDS
 
 
-def IsInactiveBot(chat_id: int) -> bool:
+def IsBotActive(chat_id: int) -> bool:
     if chat_id in STAFF_CHAT_IDS or chat_id in ADMIN_CHAT_IDS:
         return True
 
@@ -34,7 +34,7 @@ class MessageLoggingMiddleware(BaseMiddleware):
 
         await ReceiveMessage(event)
 
-        if IsInactiveBot(event.chat.id):
+        if not IsBotActive(event.chat.id):
             await SendMessage(
                 chat_id=event.chat.id,
                 text="Бот не активен.",
@@ -62,9 +62,9 @@ class CallbackLoggingMiddleware(BaseMiddleware):
             data=callback_data,
         )
 
-        if IsInactiveBot(event.from_user.id):
+        if not IsBotActive(event.from_user.id):
             await SendMessage(
-                chat_id=event.chat.id,
+                chat_id=event.from_user.id,
                 text="Бот не активен.",
             )
             return
