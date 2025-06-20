@@ -1,11 +1,9 @@
 from aiogram import F, Router, types
 
-from tg2go.bot.handlers.staff.callbacks.settings import StaffMenuSettings
-from tg2go.bot.handlers.staff.common import (
+from tg2go.bot.handlers.staff.menus.settings import SettingsMenu
+from tg2go.bot.handlers.staff.menus.staff import (
     StaffAction,
     StaffCallbackData,
-    StaffHeaderText,
-    StaffKeyboard,
     StaffMenu,
 )
 from tg2go.bot.lifecycle.active import bot_state
@@ -13,33 +11,8 @@ from tg2go.bot.lifecycle.active import bot_state
 router = Router()
 
 
-def StaffMainMenu(chat_id: int) -> StaffMenu:
-    if bot_state.active:
-        text = StaffHeaderText.Active
-        actions = [StaffAction.Activate, StaffAction.Settings, StaffAction.Cancel]
-    else:
-        text = StaffHeaderText.Inactive
-        actions = [StaffAction.Deactivate, StaffAction.Cancel]
-
-    return StaffMenu(
-        text=text,
-        reply_markup=StaffKeyboard(actions=actions, chat_id=chat_id),
-    )
-
-
-@router.callback_query(StaffCallbackData.filter(F.action == StaffAction.Cancel))
-async def CommandStaffCancel(
-    callback_query: types.CallbackQuery,
-    callback_data: StaffCallbackData,
-) -> None:
-    assert isinstance(callback_query.message, types.Message)
-
-    await callback_query.message.edit_reply_markup(reply_markup=None)
-    await callback_query.answer()
-
-
 @router.callback_query(StaffCallbackData.filter(F.action == StaffAction.Activate))
-async def CommandStaffActivate(
+async def StaffActivate(
     callback_query: types.CallbackQuery,
     callback_data: StaffCallbackData,
 ) -> None:
@@ -47,7 +20,7 @@ async def CommandStaffActivate(
 
     bot_state.Activate()
 
-    menu = StaffMainMenu(callback_query.message.chat.id)
+    menu = StaffMenu(callback_query.message.chat.id)
 
     await callback_query.message.edit_text(
         text=menu.text,
@@ -57,7 +30,7 @@ async def CommandStaffActivate(
 
 
 @router.callback_query(StaffCallbackData.filter(F.action == StaffAction.Deactivate))
-async def CommandStaffDeactivate(
+async def StaffDeactivate(
     callback_query: types.CallbackQuery,
     callback_data: StaffCallbackData,
 ) -> None:
@@ -65,7 +38,7 @@ async def CommandStaffDeactivate(
 
     bot_state.Deactivate()
 
-    menu = StaffMainMenu(callback_query.message.chat.id)
+    menu = StaffMenu(callback_query.message.chat.id)
 
     await callback_query.message.edit_text(
         text=menu.text,
@@ -75,15 +48,27 @@ async def CommandStaffDeactivate(
 
 
 @router.callback_query(StaffCallbackData.filter(F.action == StaffAction.Settings))
-async def CommandStaffSettings(
+async def StaffSettings(
     callback_query: types.CallbackQuery,
     callback_data: StaffCallbackData,
 ) -> None:
     assert isinstance(callback_query.message, types.Message)
 
-    menu = StaffMenuSettings(callback_query.message.chat.id)
+    menu = await SettingsMenu(callback_query.message.chat.id)
 
-    await callback_query.message.edit_reply_markup(
+    await callback_query.message.edit_text(
+        text=menu.text,
         reply_markup=menu.reply_markup,
     )
+    await callback_query.answer()
+
+
+@router.callback_query(StaffCallbackData.filter(F.action == StaffAction.Cancel))
+async def StaffCancel(
+    callback_query: types.CallbackQuery,
+    callback_data: StaffCallbackData,
+) -> None:
+    assert isinstance(callback_query.message, types.Message)
+
+    await callback_query.message.edit_reply_markup(reply_markup=None)
     await callback_query.answer()

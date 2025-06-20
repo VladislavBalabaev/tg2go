@@ -10,9 +10,6 @@ router = Router()
 _commands = """/logs
 See logs
 
-/messages
-See messages of a user
-
 /send
 Send message to a user
 

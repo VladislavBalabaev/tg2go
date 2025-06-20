@@ -18,9 +18,9 @@ class StaffFilter(Filter):
 
 class VerifiedFilter(Filter):
     async def __call__(self, message: types.Message) -> bool:
-        ctx = UserService.Create()
+        srv = UserService.Create()
 
-        verified = await ctx.GetUser(
+        verified = await srv.GetUser(
             chat_id=message.chat.id,
             column=User.verified,
         )
@@ -30,9 +30,9 @@ class VerifiedFilter(Filter):
 
 class HasOrderFilter(Filter):
     async def __call__(self, message: types.Message) -> bool:
-        ctx = UserService.Create()
+        srv = UserService.Create()
 
-        current_order_id = await ctx.GetUser(
+        current_order_id = await srv.GetUser(
             chat_id=message.chat.id,
             column=User.current_order_id,
         )

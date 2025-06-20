@@ -65,8 +65,8 @@ async def CommandStartGetPhoneNumber(message: types.Message, state: FSMContext) 
         )
         return
 
-    ctx = UserService.Create()
-    await ctx.UpdateUser(
+    srv = UserService.Create()
+    await srv.UpdateUser(
         chat_id=message.chat.id,
         column=User.phone_number,
         value=message.contact.phone_number,
@@ -111,6 +111,13 @@ async def CommandStartTerms(message: types.Message, state: FSMContext) -> None:
         )
         return
 
+    srv = UserService.Create()
+    await srv.UpdateUser(
+        chat_id=message.chat.id,
+        column=User.verified,
+        value=True,
+    )
+
     await SendMessage(
         chat_id=message.chat.id,
         text="✅ Спасибо!",
@@ -120,7 +127,7 @@ async def CommandStartTerms(message: types.Message, state: FSMContext) -> None:
     await SendMessage(
         chat_id=message.chat.id,
         # TODO: send new order
-        text="",
+        text="here we start new order...",
     )
 
     await state.clear()

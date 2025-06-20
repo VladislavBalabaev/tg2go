@@ -8,6 +8,7 @@ from aiogram.filters.state import StateFilter
 
 # from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 # from tg2go.bot.lib.chat.username import GetChatUserLoggingPart
+# from tg2go.bot.lib.message.io import SendMessage
 from tg2go.bot.lib.message.filters import HasOrderFilter, VerifiedFilter
 from tg2go.services.client.order import ClientOrderService, CreateNewOrder
 
@@ -31,5 +32,8 @@ async def CommandStartNew(message: types.Message) -> None:
     await CreateNewOrder(message.chat.id)
 
     srv = await ClientOrderService.Create(message.chat.id)
+
+    # msg = await SendMessage(chat_id=message.chat.id, text=..., reply_markup=...)
+    # await ....UpdateOrder(order_id, Order.order_message_id, msg.message_id)
 
     # send new message and save it to order

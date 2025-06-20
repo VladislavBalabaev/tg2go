@@ -6,6 +6,7 @@ from tg2go.bot.handlers.common.register import (
     RegisterHandlerCancel,
     RegisterHandlerZeroMessage,
 )
+from tg2go.bot.handlers.staff.register import RegisterStaffHandlers
 from tg2go.bot.lib.message.middleware import SetBotMiddleware
 from tg2go.bot.lib.notifications import admin
 from tg2go.bot.lib.notifications.erroring import SetExceptionHandlers
@@ -26,6 +27,7 @@ async def OnStartup() -> None:
     await SetMenu()
     RegisterHandlerCancel(dp)
     RegisterAdminHandlers(dp)
+    RegisterStaffHandlers(dp)
     RegisterClientHandlers(dp)
     RegisterHandlerZeroMessage(dp)
     SetBotMiddleware(dp)

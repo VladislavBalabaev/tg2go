@@ -1,42 +1,78 @@
-from aiogram import F, Router, types
 
-from tg2go.bot.handlers.staff.common import (
-    StaffAction,
-    StaffCallbackData,
-    StaffHeaderText,
-    StaffKeyboard,
-    StaffMenu,
+from aiogram import F, Router, types
+from aiogram.fsm.context import FSMContext
+
+from tg2go.bot.handlers.staff.callbacks.category_action.add import AddCategoryStates
+from tg2go.bot.handlers.staff.menus.category import CategoryMenu
+from tg2go.bot.handlers.staff.menus.settings import (
+    SettingsAction,
+    SettingsCallbackData,
+    SettingsCategoryCallbackData,
 )
-from tg2go.bot.lifecycle.active import bot_state
+from tg2go.bot.handlers.staff.menus.staff import StaffMenu
+from tg2go.bot.lib.message.io import SendMessage
 
 router = Router()
 
 
-def StaffMenuSettings(chat_id: int) -> StaffMenu:
-    if bot_state.active:
-        text = StaffHeaderText.Active
-    else:
-        text = StaffHeaderText.Inactive
-
-    return StaffMenu(
-        text=text,
-        reply_markup=StaffKeyboard(
-            actions=[StaffAction.Categories, StaffAction.Goods, StaffAction.Cancel],
-            chat_id=chat_id,
-        ),
-    )
-
-
-@router.callback_query(StaffCallbackData.filter(F.action == StaffAction.Settings))
-async def CommandStaffSettings(
+@router.callback_query(
+    SettingsCallbackData.filter(F.action == SettingsAction.AddCategory)
+)
+async def SettingsAddCategory(
     callback_query: types.CallbackQuery,
-    callback_data: StaffCallbackData,
+    callback_data: SettingsCallbackData,
+    state: FSMContext,
 ) -> None:
     assert isinstance(callback_query.message, types.Message)
 
-    menu = StaffMenuSettings(callback_query.message.chat.id)
+    await callback_query.message.edit_reply_markup(reply_markup=None)
+    await callback_query.answer()
 
-    await callback_query.message.edit_reply_markup(
+    await SendMessage(
+        chat_id=callback_query.message.chat.id,
+        text="Категория нужна для группировки позиций ассортимента."
+        "\nПрисваиваемый категории индекс отвечает за позицию категории относительно других."
+        "\nЧем больше индекс, тем ниже категория в списке."
+        "\n\nПример:\n(имя=A, индекс=5), (имя=B, индекс=1), (имя=C, индекс=7)\nбудут идти как\nB\nA\nC",
+    )
+    await SendMessage(
+        chat_id=callback_query.message.chat.id,
+        text="Напишите название новой категории.\nПомните, оно должно быть коротким",
+    )
+
+    await state.set_state(AddCategoryStates.name)
+
+
+@router.callback_query(SettingsCategoryCallbackData.filter())
+async def SettingsCategory(
+    callback_query: types.CallbackQuery,
+    callback_data: SettingsCategoryCallbackData,
+) -> None:
+    assert isinstance(callback_query.message, types.Message)
+
+    menu = await CategoryMenu(
+        chat_id=callback_query.message.chat.id,
+        category_id=callback_data.category_id,
+    )
+
+    await callback_query.message.edit_text(
+        text=menu.text,
+        reply_markup=menu.reply_markup,
+    )
+    await callback_query.answer()
+
+
+@router.callback_query(SettingsCallbackData.filter(F.action == SettingsAction.Back))
+async def SettingsBack(
+    callback_query: types.CallbackQuery,
+    callback_data: SettingsCallbackData,
+) -> None:
+    assert isinstance(callback_query.message, types.Message)
+
+    menu = StaffMenu(callback_query.message.chat.id)
+
+    await callback_query.message.edit_text(
+        text=menu.text,
         reply_markup=menu.reply_markup,
     )
     await callback_query.answer()
