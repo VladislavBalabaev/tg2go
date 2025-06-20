@@ -1,4 +1,3 @@
-
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 
@@ -31,10 +30,7 @@ async def CategoryBack(
 ) -> None:
     assert isinstance(callback_query.message, types.Message)
 
-    menu = await CategoryMenu(
-        chat_id=callback_query.message.chat.id,
-        category_id=callback_data.category_id,
-    )
+    menu = await CategoryMenu(callback_data.category_id)
 
     await callback_query.message.edit_text(
         text=menu.text,

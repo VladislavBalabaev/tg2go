@@ -12,7 +12,7 @@ class StaffCategoryService:
         self.InsertNewCategory = self._cat.InsertNewCategory
 
         # --- Read ---
-        self.GetCategories = self._cat.GetCategories
+        self.GetSortedCategories = self._cat.GetSortedCategories
 
         # --- Update ---
         self.UpdateCategoryName = self._cat.UpdateCategoryName

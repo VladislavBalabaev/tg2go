@@ -1,13 +1,11 @@
-from enum import Enum
-
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from tg2go.bot.handlers.staff.menus.menu import Menu
+from tg2go.bot.handlers.staff.menus.common import Menu, StaffAction
 from tg2go.db.models.common.types import CategoryId, GoodId
 
 
-class GoodAction(str, Enum):
+class GoodAction(StaffAction):
     ChangeGood = "Изменить продукт"
     RemoveGood = "Удалить продукт"
     Back = "Вернуться обратно"
@@ -17,43 +15,43 @@ class GoodCallbackData(CallbackData, prefix="s.good"):
     action: GoodAction
     category_id: CategoryId
     good_id: GoodId
-    chat_id: int
 
 
-async def GoodMenu(chat_id: int, category_id: CategoryId, good_id: GoodId) -> Menu:
+def CreateButton(
+    action: StaffAction, category_id: CategoryId, good_id: GoodId
+) -> InlineKeyboardButton:
+    return InlineKeyboardButton(
+        text=action.value,
+        callback_data=GoodCallbackData(
+            action=action,
+            category_id=category_id,
+            good_id=good_id,
+        ).pack(),
+    )
+
+
+async def GoodMenu(category_id: CategoryId, good_id: GoodId) -> Menu:
     # TODO: add text
     text = "..."
     buttons = [
         [
-            InlineKeyboardButton(
-                text=GoodAction.ChangeGood.value,
-                callback_data=GoodCallbackData(
-                    action=GoodAction.ChangeGood,
-                    category_id=category_id,
-                    good_id=good_id,
-                    chat_id=chat_id,
-                ).pack(),
+            CreateButton(
+                action=GoodAction.ChangeGood,
+                category_id=category_id,
+                good_id=good_id,
             ),
-            InlineKeyboardButton(
-                text=GoodAction.RemoveGood.value,
-                callback_data=GoodCallbackData(
-                    action=GoodAction.RemoveGood,
-                    category_id=category_id,
-                    good_id=good_id,
-                    chat_id=chat_id,
-                ).pack(),
+            CreateButton(
+                action=GoodAction.RemoveGood,
+                category_id=category_id,
+                good_id=good_id,
             ),
         ],
         [
-            InlineKeyboardButton(
-                text=GoodAction.Back.value,
-                callback_data=GoodCallbackData(
-                    action=GoodAction.Back,
-                    category_id=category_id,
-                    good_id=good_id,
-                    chat_id=chat_id,
-                ).pack(),
-            )
+            CreateButton(
+                action=GoodAction.Back,
+                category_id=category_id,
+                good_id=good_id,
+            ),
         ],
     ]
 

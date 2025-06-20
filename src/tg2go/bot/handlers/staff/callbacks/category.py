@@ -1,4 +1,3 @@
-
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 
@@ -25,6 +24,8 @@ async def CategoryAddGood(
 
     await callback_query.message.edit_reply_markup(reply_markup=None)
     await callback_query.answer()
+
+    await state.set_data({"category_id": callback_data.category_id})
 
     await SendMessage(
         chat_id=callback_query.message.chat.id,
@@ -62,7 +63,6 @@ async def CategoryGood(
     assert isinstance(callback_query.message, types.Message)
 
     menu = await GoodMenu(
-        chat_id=callback_query.message.chat.id,
         category_id=callback_data.category_id,
         good_id=callback_data.good_id,
     )
@@ -75,13 +75,10 @@ async def CategoryGood(
 
 
 @router.callback_query(CategoryCallbackData.filter(F.action == CategoryAction.Back))
-async def CategoryBack(
-    callback_query: types.CallbackQuery,
-    callback_data: CategoryCallbackData,
-) -> None:
+async def CategoryBack(callback_query: types.CallbackQuery) -> None:
     assert isinstance(callback_query.message, types.Message)
 
-    menu = await SettingsMenu(callback_query.message.chat.id)
+    menu = await SettingsMenu()
 
     await callback_query.message.edit_text(
         text=menu.text,
