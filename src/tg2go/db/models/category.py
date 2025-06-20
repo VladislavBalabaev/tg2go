@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from uuid import uuid4
 
 from sqlalchemy import Boolean, Integer, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -19,8 +18,9 @@ class Category(Base, TimestampMixin):
 
     # --- primary key ---
     category_id: Mapped[CategoryId] = mapped_column(
+        Integer,
         primary_key=True,
-        default=uuid4,
+        autoincrement=True,
         nullable=False,
     )
 

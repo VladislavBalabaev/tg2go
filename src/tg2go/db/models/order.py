@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 from typing import TYPE_CHECKING
-from uuid import uuid4
 
-from sqlalchemy import BigInteger, Enum as SqlEnum, ForeignKey, Numeric, Text
+from sqlalchemy import BigInteger, Enum as SqlEnum, ForeignKey, Integer, Numeric, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
@@ -21,8 +20,9 @@ class Order(Base, TimestampMixin):
 
     # --- primary key ---
     order_id: Mapped[OrderId] = mapped_column(
+        Integer,
         primary_key=True,
-        default=uuid4,
+        autoincrement=True,
         nullable=False,
     )
 

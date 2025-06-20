@@ -1,6 +1,5 @@
 from enum import Enum
 from typing import NewType
-from uuid import UUID
 
 
 # TODO: add more order statuses
@@ -13,7 +12,7 @@ class OrderStatus(str, Enum):
     cancelled = "cancelled"
 
 
-CategoryId = NewType("CategoryId", UUID)
-GoodId = NewType("GoodId", UUID)
+CategoryId = NewType("CategoryId", int)
+OrderId = NewType("OrderId", int)
+GoodId = NewType("GoodId", int)
 OrderItemId = NewType("OrderItemId", int)
-OrderId = NewType("OrderId", UUID)

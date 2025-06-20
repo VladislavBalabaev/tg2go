@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 from typing import TYPE_CHECKING
-from uuid import uuid4
 
-from sqlalchemy import Boolean, ForeignKey, Numeric, Text
+from sqlalchemy import Boolean, ForeignKey, Integer, Numeric, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
@@ -21,8 +20,9 @@ class Good(Base, TimestampMixin):
 
     # --- primary key ---
     good_id: Mapped[GoodId] = mapped_column(
+        Integer,
         primary_key=True,
-        default=uuid4,
+        autoincrement=True,
         nullable=False,
     )
 
