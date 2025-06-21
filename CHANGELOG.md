@@ -28,6 +28,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.1.0] - 2025-06-20 - Vlad
 
+### Updated
+
+- Add string representation to Good
+- Add Category/Good getters
+
+## [0.1.0] - 2025-06-20 - Vlad
+
 ### Added
 
 - /staff command

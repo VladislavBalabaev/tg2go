@@ -12,6 +12,7 @@ class StaffGoodService:
         self.InsertNewGood = self._good.InsertNewGood
 
         # --- Read ---
+        self.GetGood = self._good.GetGood
         self.GetAvailableGoods = self._good.GetAvailableGoods
 
         # --- Update ---

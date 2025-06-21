@@ -47,6 +47,16 @@ class GoodRepository:
                 raise
 
     # --- Read ---
+    async def GetGood(self, good_id: GoodId) -> Good:
+        async with self.session() as session:
+            result = await session.execute(select(Good).where(Good.good_id == good_id))
+
+            goods = list(result.scalars().all())
+            if len(goods) != 1:
+                raise NoResultFound(f"No Good(good_id={good_id}) found.")
+
+            return goods[0]
+
     async def GetAvailableGoods(self, category_id: CategoryId) -> list[Good]:
         async with self.session() as session:
             result = await session.execute(

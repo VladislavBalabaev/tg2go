@@ -30,6 +30,18 @@ class CategoryRepository:
                 raise
 
     # --- Read ---
+    async def GetCategory(self, category_id: CategoryId) -> Category:
+        async with self.session() as session:
+            result = await session.execute(
+                select(Category).where(Category.category_id == category_id)
+            )
+
+            categories = list(result.scalars().all())
+            if len(categories) != 1:
+                raise NoResultFound(f"No Category(category_id={category_id}) found.")
+
+            return categories[0]
+
     async def GetSortedCategories(self) -> list[Category]:
         async with self.session() as session:
             result = await session.execute(

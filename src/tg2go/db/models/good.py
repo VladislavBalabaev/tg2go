@@ -72,3 +72,11 @@ class Good(Base, TimestampMixin):
         back_populates="good",
         cascade="all, delete-orphan",
     )
+
+    def GetClientInfo(self) -> str:
+        # TODO: insert image_url somehow
+        return f"{self.name}, {self.price_rub}₽\n{self.description}"
+
+    def GetStaffInfo(self) -> str:
+        # TODO: insert image_url somehow
+        return f"Название: {self.name}\nЦена: {self.price_rub}₽\nДоступен для покупки: {'Да' if self.valid else 'Нет'}\nОписание: {self.description}"

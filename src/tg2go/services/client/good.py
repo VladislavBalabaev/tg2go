@@ -11,7 +11,7 @@ class ClientGoodService:
         self._good = good_repo
 
         # --- Read ---
-        self.GetCategories = self._cat.GetCategories
+        self.GetSortedCategories = self._cat.GetSortedCategories
         self.GetAvailableGoods = self._good.GetAvailableGoods
 
     @staticmethod

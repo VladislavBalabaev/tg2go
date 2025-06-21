@@ -3,7 +3,8 @@ from __future__ import annotations
 from decimal import Decimal
 
 from tg2go.bot.lib.message.io import DeleteMessage
-from tg2go.db.models.order import Order, OrderId
+from tg2go.db.models.common.types import OrderId
+from tg2go.db.models.order import Order
 from tg2go.db.models.user import User
 from tg2go.db.repositories.good import GoodRepository
 from tg2go.db.repositories.order import OrderRepository
@@ -52,18 +53,20 @@ class ClientOrderService:
     async def DeleteOrderMessage(self) -> None:
         order = await self._GetOrder()
 
-        if order.order_message_id is None:
-            raise ValueError(
-                f"Order(order_id={self.order_id}) doesn't have order_message_id already."
+        if order.order_message_id is not None:
+            await DeleteMessage(
+                chat_id=self.chat_id,
+                message_id=order.order_message_id,
             )
-
-        await DeleteMessage(chat_id=self.chat_id, message_id=order.order_message_id)
 
     async def DeleteGoodMessage(self) -> None:
         order = await self._GetOrder()
 
         if order.good_message_id is not None:
-            await DeleteMessage(chat_id=self.chat_id, message_id=order.good_message_id)
+            await DeleteMessage(
+                chat_id=self.chat_id,
+                message_id=order.good_message_id,
+            )
 
     async def OrderInfo(self) -> str:
         order = await self._GetOrder()
