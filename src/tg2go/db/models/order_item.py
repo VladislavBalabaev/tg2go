@@ -52,3 +52,7 @@ class OrderItem(Base, TimestampMixin):
         "Good",
         back_populates="order_items",
     )
+
+    def GetClientInfo(self) -> str:
+        # TODO: insert image_url somehow
+        return f"{self.good.name}, {self.unit_price_rub}₽ × \n{self.quantity}шт. -- {self.unit_price_rub * self.quantity}₽"

@@ -5,6 +5,7 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
+from tg2go.bot.handlers.staff.menus.category import CategoryMenu
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
 from tg2go.services.staff.good import StaffGoodService
 
@@ -102,6 +103,13 @@ async def CommandStaffAddGoodImageUrl(
     await SendMessage(
         chat_id=message.chat.id,
         text="Новый продукт в категории успешно создан",
+    )
+
+    menu = await CategoryMenu(data["category_id"])
+    await SendMessage(
+        chat_id=message.chat.id,
+        text=menu.text,
+        reply_markup=menu.reply_markup,
     )
 
     await state.clear()

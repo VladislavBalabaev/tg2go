@@ -23,8 +23,7 @@ async def SettingsMenu() -> Menu:
     srv = StaffCategoryService.Create()
     categories = await srv.GetSortedCategories()
 
-    # TODO: add text
-    text = "🔴 Бот не работает\n\nВы находитесь в настройках бота.\n..."
+    text = "🔴 Бот не работает\n\nВы находитесь в настройках бота"
     buttons = [
         [
             CreateButton(cb=SettingsCallbackData, action=SettingsAction.AddCategory),

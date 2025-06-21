@@ -3,6 +3,8 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from tg2go.bot.handlers.staff.menus.common import Menu, StaffAction
 from tg2go.db.models.common.types import CategoryId, GoodId
+from tg2go.services.staff.category import StaffCategoryService
+from tg2go.services.staff.good import StaffGoodService
 
 
 class GoodAction(StaffAction):
@@ -31,8 +33,13 @@ def CreateButton(
 
 
 async def GoodMenu(category_id: CategoryId, good_id: GoodId) -> Menu:
-    # TODO: add text
-    text = "..."
+    cat_srv = StaffCategoryService.Create()
+    category = await cat_srv.GetCategory(category_id)
+
+    good_srv = StaffGoodService.Create()
+    good = await good_srv.GetGood(good_id)
+
+    text = f"🔴 Бот не работает\n\nВы находитесь в настройках продукта '{good.name}' категории '{category.name}'.\n\nО продукте:\n\n{good.GetStaffInfo()}"
     buttons = [
         [
             CreateButton(

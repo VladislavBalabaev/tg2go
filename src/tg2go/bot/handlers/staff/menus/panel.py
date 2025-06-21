@@ -18,7 +18,7 @@ class PanelCallbackData(CallbackData, prefix="staff.panel"):
 
 def PanelMenu() -> Menu:
     if bot_state.active:
-        text = "🟢 Бот работает\n\nЧтобы поменять настройки бота, сперва выключите его"
+        text = "🟢 Бот работает и принимает заказы\n\nЧтобы поменять настройки бота, сперва выключите его"
         buttons = [
             [
                 CreateButton(cb=PanelCallbackData, action=PanelAction.Deactivate),
@@ -28,7 +28,7 @@ def PanelMenu() -> Menu:
             ],
         ]
     else:
-        text = "🔴 Бот не работает"
+        text = "🔴 Бот не работает\n\nПользователи не могут создать заказ"
         buttons = [
             [
                 CreateButton(cb=PanelCallbackData, action=PanelAction.Activate),

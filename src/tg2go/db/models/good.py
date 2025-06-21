@@ -75,8 +75,8 @@ class Good(Base, TimestampMixin):
 
     def GetClientInfo(self) -> str:
         # TODO: insert image_url somehow
-        return f"{self.name}, {self.price_rub}₽\n{self.description}"
+        return f"{self.name}, {self.price_rub}₽\n\nОписание: {self.description}"
 
     def GetStaffInfo(self) -> str:
         # TODO: insert image_url somehow
-        return f"Название: {self.name}\nЦена: {self.price_rub}₽\nДоступен для покупки: {'Да' if self.valid else 'Нет'}\nОписание: {self.description}"
+        return f"- Название: {self.name}\n- Цена: {self.price_rub}₽\n- Доступен для покупки: {'Да' if self.valid else 'Нет'}\n- Описание: {self.description}"
