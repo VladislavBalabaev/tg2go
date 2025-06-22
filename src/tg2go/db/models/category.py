@@ -44,4 +44,5 @@ class Category(Base, TimestampMixin):
         "Good",
         back_populates="category",
         cascade="all, delete-orphan",
+        lazy="selectin",
     )

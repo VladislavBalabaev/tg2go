@@ -68,6 +68,7 @@ class Order(Base, TimestampMixin):
         "OrderItem",
         back_populates="order",
         cascade="all, delete-orphan",
+        lazy="selectin",
     )
     history: Mapped[list[OrderHistory]] = relationship(
         "OrderHistory",

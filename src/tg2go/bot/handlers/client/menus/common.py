@@ -5,15 +5,16 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-class StaffAction(str, Enum):
+class ClientAction(str, Enum):
     pass
 
 
-def CreateButton(cb: type[CallbackData], action: StaffAction) -> InlineKeyboardButton:
+def CreateButton(cb: type[CallbackData], action: ClientAction) -> InlineKeyboardButton:
     return InlineKeyboardButton(
         text=action.value,
         callback_data=cb(action=action).pack(),
     )
+
 
 
 @dataclass

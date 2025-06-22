@@ -8,7 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tg2go.db.base import Base
 from tg2go.db.models.common.time import TimestampMixin
-from tg2go.db.models.common.types import GoodId, OrderId
+from tg2go.db.models.common.types import GoodId, OrderId, OrderItemId
 
 if TYPE_CHECKING:
     from tg2go.db.models.good import Good
@@ -19,7 +19,7 @@ class OrderItem(Base, TimestampMixin):
     __tablename__ = "order_items"
 
     # --- primary key ---
-    order_item_id: Mapped[int] = mapped_column(
+    order_item_id: Mapped[OrderItemId] = mapped_column(
         BigInteger,
         primary_key=True,
         autoincrement=True,
@@ -47,12 +47,14 @@ class OrderItem(Base, TimestampMixin):
     order: Mapped[Order] = relationship(
         "Order",
         back_populates="order_items",
+        lazy="selectin",
     )
     good: Mapped[Good] = relationship(
         "Good",
         back_populates="order_items",
+        lazy="selectin",
     )
 
-    def GetClientInfo(self) -> str:
+    def GetInfoForClient(self) -> str:
         # TODO: insert image_url somehow
         return f"{self.good.name}, {self.unit_price_rub}₽ × \n{self.quantity}шт. -- {self.unit_price_rub * self.quantity}₽"

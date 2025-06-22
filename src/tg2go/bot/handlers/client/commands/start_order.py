@@ -22,7 +22,7 @@ async def CommandStartRestart(message: types.Message) -> None:
     await srv.DeleteOrderMessage()
     await srv.DeleteGoodMessage()
 
-    text = await srv.OrderInfo()
+    text = await srv.GetOrderInfo()
 
     # send new message and save it to order
 

@@ -4,10 +4,11 @@ from typing import TypeVar, overload
 from sqlalchemy import select, update
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.orm import selectinload
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import ColumnElement
 
-from tg2go.db.models.common.types import GoodId, OrderId
+from tg2go.db.models.common.types import GoodId, OrderId, OrderItemId
 from tg2go.db.models.good import Good
 from tg2go.db.models.order import Order
 from tg2go.db.models.order_item import OrderItem
@@ -56,9 +57,13 @@ class OrderRepository:
             selection = getattr(Order, column.key)
 
         async with self.session() as session:
-            result = await session.execute(select(selection).where(condition))
+            result = await session.execute(
+                select(selection)
+                .options(selectinload(Order.order_items))
+                .where(condition)
+            )
 
-            return list(result.scalars().all())
+        return list(result.scalars().all())
 
     @overload
     async def GetOrder(
@@ -83,6 +88,7 @@ class OrderRepository:
             condition=Order.order_id == order_id,
             column=column,
         )
+
         return result[0] if result else None
 
     # --- Update ---
@@ -111,7 +117,7 @@ class OrderRepository:
             )
 
     # --- Order-Good Logic ---
-    async def AddGoodToOrder(self, order_id: OrderId, good_id: GoodId) -> None:
+    async def AddGoodToOrder(self, order_id: OrderId, good_id: GoodId) -> OrderItemId:
         async with self.session() as session:
             order = await session.get(Order, order_id)
             good = await session.get(Good, good_id)
@@ -143,6 +149,8 @@ class OrderRepository:
             logging.info(f"After adding good {good} order is {order}")
 
             await session.commit()
+
+        return item.order_item_id
 
     # TODO: AddOneItem, RemoveOneItem, AddItemFully
     # async def ReduceItemInOrder(self, order_id: OrderId, order_item_id: OrderItemId) -> None:

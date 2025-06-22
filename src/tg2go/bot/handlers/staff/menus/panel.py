@@ -6,10 +6,10 @@ from tg2go.bot.lifecycle.active import bot_state
 
 
 class PanelAction(StaffAction):
-    Activate = "Включить"
-    Deactivate = "Выключить"
-    Settings = "Настройки"
-    Cancel = "Оставить как есть"
+    Activate = "✅ Включить"
+    Deactivate = "❌ Выключить"
+    Settings = "🛠️ Настройки"
+    Cancel = "Выйти из меню"
 
 
 class PanelCallbackData(CallbackData, prefix="staff.panel"):
@@ -20,25 +20,15 @@ def PanelMenu() -> Menu:
     if bot_state.active:
         text = "🟢 Бот работает и принимает заказы\n\nЧтобы поменять настройки бота, сперва выключите его"
         buttons = [
-            [
-                CreateButton(cb=PanelCallbackData, action=PanelAction.Deactivate),
-            ],
-            [
-                CreateButton(cb=PanelCallbackData, action=PanelAction.Cancel),
-            ],
+            [CreateButton(cb=PanelCallbackData, action=PanelAction.Deactivate)],
+            [CreateButton(cb=PanelCallbackData, action=PanelAction.Cancel)],
         ]
     else:
         text = "🔴 Бот не работает\n\nПользователи не могут создать заказ"
         buttons = [
-            [
-                CreateButton(cb=PanelCallbackData, action=PanelAction.Activate),
-            ],
-            [
-                CreateButton(cb=PanelCallbackData, action=PanelAction.Settings),
-            ],
-            [
-                CreateButton(cb=PanelCallbackData, action=PanelAction.Cancel),
-            ],
+            [CreateButton(cb=PanelCallbackData, action=PanelAction.Activate)],
+            [CreateButton(cb=PanelCallbackData, action=PanelAction.Settings)],
+            [CreateButton(cb=PanelCallbackData, action=PanelAction.Cancel)],
         ]
 
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)

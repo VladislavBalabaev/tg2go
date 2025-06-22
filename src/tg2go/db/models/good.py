@@ -65,18 +65,20 @@ class Good(Base, TimestampMixin):
     category: Mapped[Category] = relationship(
         "Category",
         back_populates="goods",
+        lazy="selectin",
     )
 
     order_items: Mapped[list[OrderItem]] = relationship(
         "OrderItem",
         back_populates="good",
         cascade="all, delete-orphan",
+        lazy="selectin",
     )
 
-    def GetClientInfo(self) -> str:
+    def GetInfoForClient(self) -> str:
         # TODO: insert image_url somehow
         return f"{self.name}, {self.price_rub}₽\n\nОписание: {self.description}"
 
-    def GetStaffInfo(self) -> str:
+    def GetInfoForStaff(self) -> str:
         # TODO: insert image_url somehow
         return f"- Название: {self.name}\n- Цена: {self.price_rub}₽\n- Доступен для покупки: {'Да' if self.valid else 'Нет'}\n- Описание: {self.description}"

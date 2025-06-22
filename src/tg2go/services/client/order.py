@@ -3,7 +3,7 @@ from __future__ import annotations
 from decimal import Decimal
 
 from tg2go.bot.lib.message.io import DeleteMessage
-from tg2go.db.models.common.types import OrderId
+from tg2go.db.models.common.types import OrderId, OrderItemId
 from tg2go.db.models.order import Order
 from tg2go.db.models.user import User
 from tg2go.db.repositories.good import GoodRepository
@@ -68,7 +68,8 @@ class ClientOrderService:
                 message_id=order.good_message_id,
             )
 
-    async def OrderInfo(self) -> str:
+    async def GetOrderInfo(self) -> str:
+        # TODO
         order = await self._GetOrder()
 
         info = "Шаурма #1 / Сокольники\n📍Москва, Сокольническая площадь, 9\n\n"
@@ -90,11 +91,27 @@ class ClientOrderService:
 
         return info
 
-    async def OrderInfoCategories(self) -> list[str]:
-        return ["вкусновое", "невкусновое", "пирожки", "кошкимышки"]
+    async def GetOrderItemInfo(self, order_item_id: OrderItemId) -> str:
+        order = await self._order.GetOrder(self.order_id)
+
+        if order is None:
+            raise ValueError(f"Order(order_id={self.order_id}) doesn't exist.")
+
+        for item in order.order_items:
+            if order_item_id == item.order_item_id:
+                quantity = item.quantity
+                break
+        else:
+            raise ValueError(
+                f"Order(order_id={self.order_id}) doesn't have OrderItem(order_item_id={order_item_id})."
+            )
+
+        good = await self._good.GetGood(item.good_id)
+
+        return f"{good.GetInfoForClient()}\n\nПозиций в заказе: {quantity} шт."
 
     async def FinishOrdering(self) -> None:
-        # TODO: FinishOrderOrdering
+        # TODO
         ...
 
     @staticmethod

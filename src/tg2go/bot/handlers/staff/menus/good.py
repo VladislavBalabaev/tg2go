@@ -8,12 +8,12 @@ from tg2go.services.staff.good import StaffGoodService
 
 
 class GoodAction(StaffAction):
-    ChangeGood = "Изменить продукт"
-    RemoveGood = "Удалить продукт"
-    Back = "Вернуться обратно"
+    ChangeGood = "✏️ Изменить продукт"
+    RemoveGood = "🚫 Удалить продукт"
+    Back = "⬅️ Назад"
 
 
-class GoodCallbackData(CallbackData, prefix="s.good"):
+class GoodCallbackData(CallbackData, prefix="staff.good"):
     action: GoodAction
     category_id: CategoryId
     good_id: GoodId
@@ -39,7 +39,7 @@ async def GoodMenu(category_id: CategoryId, good_id: GoodId) -> Menu:
     good_srv = StaffGoodService.Create()
     good = await good_srv.GetGood(good_id)
 
-    text = f"🔴 Бот не работает\n\nВы находитесь в настройках продукта '{good.name}' категории '{category.name}'.\n\nО продукте:\n\n{good.GetStaffInfo()}"
+    text = f"🔴 Бот не работает\n\nВы находитесь в настройках продукта '{good.name}' категории '{category.name}'.\n\nО продукте:\n\n{good.GetInfoForStaff()}"
     buttons = [
         [
             CreateButton(

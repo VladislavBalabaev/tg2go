@@ -1,30 +1,27 @@
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from tg2go.bot.handlers.staff.menus.common import Menu, StaffAction
+from tg2go.bot.handlers.client.menus.common import ClientAction, Menu
 from tg2go.db.models.common.types import CategoryId, GoodId
-from tg2go.services.staff.category import StaffCategoryService
-from tg2go.services.staff.good import StaffGoodService
+from tg2go.services.client.good import ClientGoodService
+from tg2go.services.client.order import ClientOrderService
 
 
-class CategoryAction(StaffAction):
-    AddGood = "🥗 Добавить продукт"
-    ChangeCategory = "✏️ Изменить категорию"
-    RemoveCategory = "🚫 Удалить категорию"
+class CategoryAction(ClientAction):
     Back = "⬅️ Назад"
 
 
-class CategoryCallbackData(CallbackData, prefix="staff.cat"):
+class CategoryCallbackData(CallbackData, prefix="client.cat"):
     action: CategoryAction
     category_id: CategoryId
 
 
-class CategoryGoodCallbackData(CallbackData, prefix="staff.cat.good"):
+class CategoryGoodCallbackData(CallbackData, prefix="client.cat.good"):
     category_id: CategoryId
     good_id: GoodId
 
 
-def CreateButton(action: StaffAction, category_id: CategoryId) -> InlineKeyboardButton:
+def CreateButton(action: ClientAction, category_id: CategoryId) -> InlineKeyboardButton:
     return InlineKeyboardButton(
         text=action.value,
         callback_data=CategoryCallbackData(
@@ -33,11 +30,10 @@ def CreateButton(action: StaffAction, category_id: CategoryId) -> InlineKeyboard
     )
 
 
-async def CategoryMenu(category_id: CategoryId) -> Menu:
-    cat_srv = StaffCategoryService.Create()
-    category = await cat_srv.GetCategory(category_id)
+async def CategoryMenu(chat_id: int, category_id: CategoryId) -> Menu:
+    order_srv = await ClientOrderService.Create(chat_id)
 
-    good_srv = StaffGoodService.Create()
+    good_srv = ClientGoodService.Create()
     goods = await good_srv.GetAvailableGoods(category_id)
 
     buttons = []
@@ -61,17 +57,11 @@ async def CategoryMenu(category_id: CategoryId) -> Menu:
     if group:
         buttons.append(group)
 
-    text = f"🔴 Бот не работает\n\nВы находитесь в настройках категории '{category.name}' с индексом '{category.index}'."
+    text = await order_srv.GetOrderInfo()
     buttons = [
-        [
-            CreateButton(action=CategoryAction.ChangeCategory, category_id=category_id),
-            CreateButton(action=CategoryAction.RemoveCategory, category_id=category_id),
-        ],
-        [CreateButton(action=CategoryAction.AddGood, category_id=category_id)],
         *buttons,
         [CreateButton(action=CategoryAction.Back, category_id=category_id)],
     ]
-
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     return Menu(
