@@ -1,13 +1,14 @@
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from tg2go.bot.handlers.client.menus.common import ClientAction, Menu
+from tg2go.bot.handlers.client.menus.common import ClientAction, ClientPosition, Menu
 from tg2go.db.models.common.types import GoodId
 from tg2go.services.client.good import ClientGoodService
 
 
 class GoodAction(ClientAction):
-    AddGood = "Добавить в корзину"
+    Card = "🛒 Корзина"
+    AddGood = "➕ Добавить в корзину"
     Back = "⬅️ Назад"
 
 
@@ -30,8 +31,9 @@ async def GoodMenu(good_id: GoodId) -> Menu:
     srv = ClientGoodService.Create()
     good = await srv.GetGood(good_id)
 
-    text = good.GetInfoForClient()
+    text = good.GetInfoForClient() + ClientPosition.Good(good)
     buttons = [
+        [CreateButton(action=GoodAction.Card, good_id=good_id)],
         [CreateButton(action=GoodAction.AddGood, good_id=good_id)],
         [CreateButton(action=GoodAction.Back, good_id=good_id)],
     ]

@@ -5,9 +5,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
+from tg2go.bot.handlers.client.commands.start_order import SendPanelMenu
 from tg2go.bot.lib.message.io import ContextIO, SendDocument, SendMessage
 from tg2go.core.configs.paths import PATH_TERMS_OF_USE
 from tg2go.db.models.user import User
+from tg2go.services.client.order import CreateNewOrder
 from tg2go.services.user import UserService
 
 router = Router()
@@ -116,10 +118,7 @@ async def CommandStartTerms(message: types.Message, state: FSMContext) -> None:
         reply_markup=ReplyKeyboardRemove(),
     )
 
-    await SendMessage(
-        chat_id=message.chat.id,
-        # TODO: send new order
-        text="here we start new order...",
-    )
+    await CreateNewOrder(message.chat.id)
+    await SendPanelMenu(message)
 
     await state.clear()

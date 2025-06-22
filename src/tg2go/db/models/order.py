@@ -38,10 +38,6 @@ class Order(Base, TimestampMixin):
         BigInteger,
         nullable=True,
     )
-    good_message_id: Mapped[int | None] = mapped_column(
-        BigInteger,
-        nullable=True,
-    )
 
     # --- description ---
     status: Mapped[OrderStatus] = mapped_column(
@@ -75,3 +71,5 @@ class Order(Base, TimestampMixin):
         back_populates="order",
         cascade="all, delete-orphan",
     )
+
+    # TODO: add descriptions

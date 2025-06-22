@@ -117,19 +117,15 @@ class OrderRepository:
             )
 
     # --- Order-Good Logic ---
-    async def AddGoodToOrder(self, order_id: OrderId, good_id: GoodId) -> OrderItemId:
+    async def AddGoodInOrder(self, order_id: OrderId, good_id: GoodId) -> OrderItemId:
         async with self.session() as session:
             order = await session.get(Order, order_id)
             good = await session.get(Good, good_id)
 
             if order is None:
-                raise ValueError(
-                    f"No such Order(order_id={order_id}) when adding good to order."
-                )
+                raise ValueError(f"No such Order(order_id={order_id}).")
             if good is None:
-                raise ValueError(
-                    f"No such Good(good_id={good_id}) when adding good to order."
-                )
+                raise ValueError(f"No such Good(good_id={good_id}).")
 
             for item in order.order_items:
                 if good.good_id == item.good_id:
@@ -142,47 +138,48 @@ class OrderRepository:
                     quantity=1,
                     unit_price_rub=good.price_rub,  # cache
                 )
-                order.order_items.append(item)
+                order.order_items.append(item)  # do i need to do it?
 
             order.total_price_rub += item.unit_price_rub
 
-            logging.info(f"After adding good {good} order is {order}")
+            logging.info(f"After adding {good} order is {order}")
 
             await session.commit()
 
         return item.order_item_id
 
-    # TODO: AddOneItem, RemoveOneItem, AddItemFully
-    # async def ReduceItemInOrder(self, order_id: OrderId, order_item_id: OrderItemId) -> None:
-    #     async with self.session() as session:
-    #         order = await session.get(Order, order_id)
-    #         order_item = await session.get(OrderItem, order_item_id)
+    async def ReduceGoodInOrder(
+        self, order_id: OrderId, good_id: GoodId
+    ) -> OrderItemId:
+        async with self.session() as session:
+            order = await session.get(Order, order_id)
+            good = await session.get(Good, good_id)
 
-    #         if order is None:
-    #             raise ValueError(
-    #                 f"No such Order(order_id={order_id}) when removing good from order."
-    #             )
-    #         if order_item is None:
-    #             raise ValueError(
-    #                 f"No such OrderItem(order_item_id={order_item_id}) when removing good from order."
-    #             )
+            if order is None:
+                raise ValueError(f"No such Order(order_id={order_id}).")
+            if good is None:
+                raise ValueError(f"No such Good(good_id={good_id}).")
 
-    #         for item in order.order_items:
-    #             if order_item.order_item_id == item.order_item_id:
-    #                 item.quantity -= 1
-    #                 break
-    #         else:
-    #             raise ValueError(f"No {order_item} in {order} when removing item from order.")
+            for item in order.order_items:
+                if good.good_id == item.good_id:
+                    item.quantity -= 1
+                    break
+            else:
+                raise ValueError(
+                    f"No such OrderItem(good_id={good_id}) was found in Order(order_id={order_id})."
+                )
 
-    #         order.total_price_rub -= item.unit_price_rub
+            order.total_price_rub -= item.unit_price_rub
 
-    #         if item.quantity == 0:
-    #             await session.delete(item)
+            if item.quantity == 0:
+                await session.delete(item)
 
-    #         if order.total_price_rub < 0:
-    #             await session.rollback()
-    #             raise ValueError(f"Total price RUB is negative for {order}")
+            if order.total_price_rub < 0:
+                await session.rollback()
+                raise ValueError(f"Total price RUB is negative for {order}")
 
-    #         logging.info(f"After removing {order_item} order is {order}")
+            logging.info(f"After removing {good} order is {order}")
 
-    #         await session.commit()
+            await session.commit()
+
+        return item.order_item_id

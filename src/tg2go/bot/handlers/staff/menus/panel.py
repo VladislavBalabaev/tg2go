@@ -6,8 +6,8 @@ from tg2go.bot.lifecycle.active import bot_state
 
 
 class PanelAction(StaffAction):
-    Activate = "✅ Включить"
-    Deactivate = "❌ Выключить"
+    Activate = "✅ Включить бота"
+    Deactivate = "❌ Выключить бота"
     Settings = "🛠️ Настройки"
     Cancel = "Выйти из меню"
 

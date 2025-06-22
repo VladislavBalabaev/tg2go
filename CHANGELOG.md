@@ -28,6 +28,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [0.1.0] - 2025-06-20 - Vlad
 
+### Added
+
+- Main client order functionality with /start callbacks and menus
+
 ### Updated
 
 - Do relationship pre-loading of dependencies in DB models except for order history
@@ -36,7 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- A lot of /staff callbacks with menus
+- Main /staff callbacks and menus
 
 ### Updated
 

@@ -1,18 +1,19 @@
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from tg2go.bot.handlers.client.menus.common import ClientAction, Menu
+from tg2go.bot.handlers.client.menus.common import ClientAction, ClientPosition, Menu
 from tg2go.db.models.common.types import OrderItemId
 from tg2go.services.client.order import ClientOrderService
 
 
 class ItemAction(ClientAction):
-    AddItem = "➕ Добавить"
-    ReduceItem = "➖ Убрать"
+    Card = "🛒 Корзина"
+    Add = "➕ Добавить"
+    Reduce = "➖ Убрать"
     Back = "⬅️ Назад"
 
 
-class ItemCallbackData(CallbackData, prefix="client.good"):
+class ItemCallbackData(CallbackData, prefix="client.item"):
     action: ItemAction
     order_item_id: OrderItemId
 
@@ -31,16 +32,23 @@ def CreateButton(
 
 async def ItemMenu(chat_id: int, order_item_id: OrderItemId) -> Menu:
     srv = await ClientOrderService.Create(chat_id)
+    order_item = await srv.GetOrderItem(order_item_id)
 
-    text = await srv.GetOrderItemInfo(order_item_id)
+    text = order_item.GetInfoForClient() + ClientPosition.Item(order_item)
     buttons = [
         [
             CreateButton(
-                action=ItemAction.AddItem,
+                action=ItemAction.Card,
+                order_item_id=order_item_id,
+            )
+        ],
+        [
+            CreateButton(
+                action=ItemAction.Add,
                 order_item_id=order_item_id,
             ),
             CreateButton(
-                action=ItemAction.ReduceItem,
+                action=ItemAction.Reduce,
                 order_item_id=order_item_id,
             ),
         ],
@@ -51,7 +59,6 @@ async def ItemMenu(chat_id: int, order_item_id: OrderItemId) -> Menu:
             )
         ],
     ]
-
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     return Menu(

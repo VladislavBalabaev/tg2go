@@ -1,13 +1,17 @@
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from tg2go.bot.handlers.client.menus.common import ClientAction, CreateButton, Menu
+from tg2go.bot.handlers.client.menus.common import (
+    ClientAction,
+    ClientPosition,
+    CreateButton,
+    Menu,
+)
 from tg2go.db.models.common.types import CategoryId
 from tg2go.services.client.category import ClientCategoryService
 from tg2go.services.client.order import ClientOrderService
 
 
-# TODO: add Card to each menu
 class HubAction(ClientAction):
     Card = "🛒 Корзина"
     Back = "⬅️ Назад"
@@ -47,7 +51,7 @@ async def HubMenu(chat_id: int) -> Menu:
     if group:
         buttons.append(group)
 
-    text = await order_srv.GetOrderInfo()
+    text = await order_srv.GetOrderInfo() + ClientPosition.Hub()
     buttons = [
         [CreateButton(cb=HubCallbackData, action=HubAction.Card)],
         *buttons,

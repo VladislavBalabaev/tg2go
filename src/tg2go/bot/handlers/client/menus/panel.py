@@ -9,6 +9,7 @@ class PanelAction(ClientAction):
     Address = "📍 Местоположение"
     About = "🧭 О нас"
     AboutService = "🏢 О сервисе"
+    Back = "⬅️ Назад"
 
 
 class PanelCallbackData(CallbackData, prefix="client.panel"):
@@ -29,4 +30,10 @@ def PanelMenu() -> Menu:
     return Menu(
         text=text,
         reply_markup=markup,
+    )
+
+
+def BackToPanelReplyMarkup() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[[CreateButton(cb=PanelCallbackData, action=PanelAction.Back)]]
     )

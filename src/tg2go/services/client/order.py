@@ -1,15 +1,19 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from typing import TypeVar
 
 from tg2go.bot.lib.message.io import DeleteMessage
-from tg2go.db.models.common.types import OrderId, OrderItemId
+from tg2go.db.models.common.types import GoodId, OrderId, OrderItemId
 from tg2go.db.models.order import Order
+from tg2go.db.models.order_item import OrderItem
 from tg2go.db.models.user import User
 from tg2go.db.repositories.good import GoodRepository
 from tg2go.db.repositories.order import OrderRepository
 from tg2go.db.repositories.user import UserRepository
 from tg2go.db.session import AsyncSessionLocal
+
+T = TypeVar("T")
 
 
 async def CreateNewOrder(chat_id: int) -> OrderId:
@@ -59,14 +63,26 @@ class ClientOrderService:
                 message_id=order.order_message_id,
             )
 
-    async def DeleteGoodMessage(self) -> None:
-        order = await self._GetOrder()
+    async def SetOrderMessage(self, message_id: int) -> None:
+        await self._order.UpdateOrder(
+            order_id=self.order_id,
+            column=Order.order_message_id,
+            value=message_id,
+        )
 
-        if order.good_message_id is not None:
-            await DeleteMessage(
-                chat_id=self.chat_id,
-                message_id=order.good_message_id,
-            )
+    async def GetOrderItem(self, order_item_id: OrderItemId) -> OrderItem:
+        order = await self._order.GetOrder(self.order_id)
+
+        if order is None:
+            raise ValueError(f"Order(order_id={self.order_id}) doesn't exist.")
+
+        for item in order.order_items:
+            if order_item_id == item.order_item_id:
+                return item
+
+        raise ValueError(
+            f"Order(order_id={self.order_id}) doesn't have OrderItem(order_item_id={order_item_id})."
+        )
 
     async def GetOrderInfo(self) -> str:
         # TODO
@@ -74,8 +90,8 @@ class ClientOrderService:
 
         info = "Шаурма #1 / Сокольники\n📍Москва, Сокольническая площадь, 9\n\n"
 
-        if order.order_items:
-            info += "Выберите категорию меню."
+        if not order.order_items:
+            info += "Ваш заказ пока что пуст."
             return info
 
         info += "Заказ:\n"
@@ -91,24 +107,14 @@ class ClientOrderService:
 
         return info
 
-    async def GetOrderItemInfo(self, order_item_id: OrderItemId) -> str:
-        order = await self._order.GetOrder(self.order_id)
+    async def AddGoodInOrder(self, good_id: GoodId) -> OrderItemId:
+        return await self._order.AddGoodInOrder(order_id=self.order_id, good_id=good_id)
 
-        if order is None:
-            raise ValueError(f"Order(order_id={self.order_id}) doesn't exist.")
-
-        for item in order.order_items:
-            if order_item_id == item.order_item_id:
-                quantity = item.quantity
-                break
-        else:
-            raise ValueError(
-                f"Order(order_id={self.order_id}) doesn't have OrderItem(order_item_id={order_item_id})."
-            )
-
-        good = await self._good.GetGood(item.good_id)
-
-        return f"{good.GetInfoForClient()}\n\nПозиций в заказе: {quantity} шт."
+    async def ReduceGoodInOrder(self, good_id: GoodId) -> OrderItemId:
+        return await self._order.ReduceGoodInOrder(
+            order_id=self.order_id,
+            good_id=good_id,
+        )
 
     async def FinishOrdering(self) -> None:
         # TODO

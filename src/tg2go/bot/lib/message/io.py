@@ -155,6 +155,8 @@ async def ReceiveCallback(query: types.CallbackQuery, data: CallbackData) -> Non
 
 
 async def DeleteMessage(chat_id: int, message_id: int) -> None:
+    add = ContextIO.No
+
     try:
         await bot.delete_message(chat_id=chat_id, message_id=message_id)
     except TelegramForbiddenError:
