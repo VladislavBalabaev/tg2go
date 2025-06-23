@@ -98,7 +98,7 @@ async def GoodChangePriceRub(
 
     await SendMessage(
         chat_id=callback_query.message.chat.id,
-        text="Напишите новою цену позиции",
+        text="Напишите новую цену позиции",
     )
 
     await state.set_state(GoodChangePriceRubStates.Change)
