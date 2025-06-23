@@ -29,7 +29,7 @@ async def CategoryRemoveDelete(
 
     await SendMessage(
         chat_id=callback_query.message.chat.id,
-        text="Категория успешно удалена",
+        text="Позиция успешно удалена",
     )
 
     good = await srv.GetGood(callback_data.good_id)
