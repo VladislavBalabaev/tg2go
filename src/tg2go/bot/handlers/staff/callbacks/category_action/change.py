@@ -119,7 +119,7 @@ async def CategoryChangeIndexChange(
 
     await SendMessage(
         chat_id=message.chat.id,
-        text="✅ Индекс категории успешно измененен",
+        text="✅ Индекс категории успешно изменен",
     )
 
     menu = await CategoryChangeMenu(data["category_id"])
