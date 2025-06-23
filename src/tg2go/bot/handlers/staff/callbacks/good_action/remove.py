@@ -15,7 +15,7 @@ router = Router()
 @router.callback_query(
     GoodRemoveCallbackData.filter(F.action == GoodRemoveAction.Delete)
 )
-async def CategoryRemoveDelete(
+async def GoodRemoveDelete(
     callback_query: types.CallbackQuery,
     callback_data: GoodRemoveCallbackData,
 ) -> None:
@@ -45,7 +45,7 @@ async def CategoryRemoveDelete(
 
 
 @router.callback_query(GoodRemoveCallbackData.filter(F.action == GoodRemoveAction.Back))
-async def CategoryRemoveBack(
+async def GoodRemoveBack(
     callback_query: types.CallbackQuery,
     callback_data: GoodRemoveCallbackData,
 ) -> None:
