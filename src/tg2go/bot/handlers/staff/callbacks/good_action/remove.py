@@ -42,6 +42,7 @@ async def GoodRemoveDelete(
     )
 
     await callback_query.message.delete()
+    await callback_query.answer()
 
 
 @router.callback_query(GoodRemoveCallbackData.filter(F.action == GoodRemoveAction.Back))

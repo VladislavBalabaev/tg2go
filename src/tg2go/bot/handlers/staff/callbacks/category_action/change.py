@@ -9,7 +9,7 @@ from tg2go.bot.handlers.staff.menus.category_action.change import (
     CategoryChangeCallbackData,
     CategoryChangeMenu,
 )
-from tg2go.bot.lib.message.io import SendMessage
+from tg2go.bot.lib.message.io import ContextIO, SendMessage
 from tg2go.db.models.category import Category
 from tg2go.services.staff.category import StaffCategoryService
 
@@ -107,6 +107,14 @@ async def CategoryChangeIndexChange(
     state: FSMContext,
 ) -> None:
     assert message.text is not None
+
+    if not message.text.isdigit():
+        await SendMessage(
+            chat_id=message.chat.id,
+            text="Индекс категории обязан быть целым числом",
+            context=ContextIO.UserFailed,
+        )
+        return
 
     data = await state.get_data()
 

@@ -43,7 +43,7 @@ async def GoodRemoveGood(
 
 
 @router.callback_query(GoodCallbackData.filter(F.action == GoodAction.Back))
-async def CategoryBack(
+async def GoodBack(
     callback_query: types.CallbackQuery,
     callback_data: GoodCallbackData,
 ) -> None:
@@ -60,3 +60,4 @@ async def CategoryBack(
     )
 
     await callback_query.message.delete()
+    await callback_query.answer()

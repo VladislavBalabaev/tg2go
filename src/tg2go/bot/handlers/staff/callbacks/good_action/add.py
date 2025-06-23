@@ -63,7 +63,7 @@ async def CommandStaffAddGoodPriceRub(
 
     await SendMessage(
         chat_id=message.chat.id,
-        text="Укажите описание продукта, добавляя ингредиенты и граммовки.",
+        text="Укажите описание продукта, добавляя ингридиенты и граммовки.",
     )
 
     await state.set_state(AddGoodStates.Description)

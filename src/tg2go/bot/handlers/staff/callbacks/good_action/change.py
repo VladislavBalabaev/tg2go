@@ -243,7 +243,7 @@ async def GoodChangeImageUrlChange(
     if message.photo is None:
         await SendMessage(
             chat_id=message.chat.id,
-            text="❌ Вы отправили не фото для создаваемой позиции.\n\nОтправьте, пожалуйста, фотографию для новой позиции в меню",
+            text="❌ Вы отправили не фото для позиции.\n\nОтправьте, пожалуйста, новое фото позиции",
             context=ContextIO.UserFailed,
         )
         return

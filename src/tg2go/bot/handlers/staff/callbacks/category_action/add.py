@@ -42,7 +42,7 @@ async def CommandStaffAddCategoryIndex(
     if not message.text.isdigit():
         await SendMessage(
             chat_id=message.chat.id,
-            text="Индекс обязан быть целым положительным числом",
+            text="Индекс обязан быть целым числом",
             context=ContextIO.UserFailed,
         )
         return
