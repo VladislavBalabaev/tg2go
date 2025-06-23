@@ -6,28 +6,27 @@ from tg2go.db.models.common.types import GoodId
 from tg2go.services.staff.good import StaffGoodService
 
 
-class GoodAction(StaffAction):
-    ChangeGood = "✏️ Изменить позицию"
-    RemoveGood = "🗑️ Удалить позицию"
+class GoodRemoveAction(StaffAction):
+    Delete = "🗑️ Точно удалить"
     Back = "⬅️ Назад"
 
 
-class GoodCallbackData(CallbackData, prefix="staff.good"):
-    action: GoodAction
+class GoodRemoveCallbackData(CallbackData, prefix="staff.good.remove"):
+    action: GoodRemoveAction
     good_id: GoodId
 
 
 def CreateButton(action: StaffAction, good_id: GoodId) -> InlineKeyboardButton:
     return InlineKeyboardButton(
         text=action.value,
-        callback_data=GoodCallbackData(
+        callback_data=GoodRemoveCallbackData(
             action=action,
             good_id=good_id,
         ).pack(),
     )
 
 
-async def GoodMenu(good_id: GoodId) -> MediaMenu:
+async def GoodRemoveMenu(good_id: GoodId) -> MediaMenu:
     good_srv = StaffGoodService.Create()
     good = await good_srv.GetGood(good_id)
 
@@ -37,17 +36,13 @@ async def GoodMenu(good_id: GoodId) -> MediaMenu:
     buttons = [
         [
             CreateButton(
-                action=GoodAction.ChangeGood,
+                action=GoodRemoveAction.Delete,
                 good_id=good_id,
-            ),
-            CreateButton(
-                action=GoodAction.RemoveGood,
-                good_id=good_id,
-            ),
+            )
         ],
         [
             CreateButton(
-                action=GoodAction.Back,
+                action=GoodRemoveAction.Back,
                 good_id=good_id,
             ),
         ],

@@ -46,7 +46,7 @@ async def CommandStartGetPhoneNumber(message: types.Message, state: FSMContext) 
         )
         return
 
-    if message.contact.user_id is None or message.from_user is None:
+    if message.contact.user_id is None:
         await SendMessage(
             chat_id=message.chat.id,
             text="❌ Не удалось получить ваш номер телефона, так как вы не являетесь пользователем Telegram.\nПожалуйста, попробуйте снова из своего пользовательского профиля",
@@ -54,7 +54,7 @@ async def CommandStartGetPhoneNumber(message: types.Message, state: FSMContext) 
         )
         return
 
-    if message.contact.user_id != message.from_user.id:
+    if message.contact.user_id != message.chat.id:
         await SendMessage(
             chat_id=message.chat.id,
             text="❌ Вы отправили чужой номер телефона.\nПожалуйста, отправьте свой собственный номер.\n\nЕсли меню с кнопками скрыто, нажмите на значок 🎛 в правом нижнем углу",

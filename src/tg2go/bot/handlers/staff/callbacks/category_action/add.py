@@ -11,11 +11,11 @@ router = Router()
 
 
 class AddCategoryStates(StatesGroup):
-    name = State()
-    index = State()
+    Name = State()
+    Index = State()
 
 
-@router.message(StateFilter(AddCategoryStates.name), F.content_type == "text")
+@router.message(StateFilter(AddCategoryStates.Name), F.content_type == "text")
 async def CommandStaffAddCategoryName(
     message: types.Message,
     state: FSMContext,
@@ -29,10 +29,10 @@ async def CommandStaffAddCategoryName(
         text="Присвойте индекс категории (целым положительным числом).\nЧем выше число, тем ниже по списку будет категория",
     )
 
-    await state.set_state(AddCategoryStates.index)
+    await state.set_state(AddCategoryStates.Index)
 
 
-@router.message(StateFilter(AddCategoryStates.index), F.content_type == "text")
+@router.message(StateFilter(AddCategoryStates.Index), F.content_type == "text")
 async def CommandStaffAddCategoryIndex(
     message: types.Message,
     state: FSMContext,
@@ -57,7 +57,7 @@ async def CommandStaffAddCategoryIndex(
 
     await SendMessage(
         chat_id=message.chat.id,
-        text="Новая категория успешно создана",
+        text="✅ Новая категория успешно создана",
     )
 
     menu = await SettingsMenu()

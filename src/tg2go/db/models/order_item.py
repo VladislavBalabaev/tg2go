@@ -58,6 +58,6 @@ class OrderItem(Base, TimestampMixin):
     def GetInfoForClient(self) -> str:
         # TODO: insert image_url somehow
         text = self.good.GetInfoForClient()
-        text += f"\n\n📋Позиция в заказе:\n{self.unit_price_rub}₽ × \n{self.quantity}шт. -- {self.unit_price_rub * self.quantity}₽"
+        text += f"\n\n📋Позиция в заказе:\n{self.unit_price_rub}₽ × {self.quantity}шт. = {self.unit_price_rub * self.quantity}₽"
 
         return text

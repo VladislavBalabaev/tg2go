@@ -2,12 +2,12 @@ import asyncio
 
 from tg2go.bot.handlers.admin.register import RegisterAdminHandlers
 from tg2go.bot.handlers.client.register import RegisterClientHandlers
-from tg2go.bot.handlers.common.register import (
+from tg2go.bot.handlers.forall.register import (
     RegisterHandlerCancel,
     RegisterHandlerZeroMessage,
 )
+from tg2go.bot.handlers.middleware import SetBotMiddleware
 from tg2go.bot.handlers.staff.register import RegisterStaffHandlers
-from tg2go.bot.lib.message.middleware import SetBotMiddleware
 from tg2go.bot.lib.notifications import admin
 from tg2go.bot.lib.notifications.erroring import SetExceptionHandlers
 from tg2go.bot.lib.notifications.pending import ProcessPendingUpdates

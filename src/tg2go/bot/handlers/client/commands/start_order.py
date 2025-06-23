@@ -26,7 +26,7 @@ async def SendPanelMenu(message: types.Message) -> None:
         return
 
     srv = await ClientOrderService.Create(message.chat.id)
-    await srv.SetOrderMessage(message.message_id)
+    await srv.SetOrderMessage(msg.message_id)
 
 
 @router.message(StateFilter(None), Command("start"), VerifiedFilter(), HasOrderFilter())

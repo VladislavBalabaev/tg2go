@@ -1,6 +1,6 @@
 from aiogram import Dispatcher
 
-from tg2go.bot.handlers.common.commands import cancel, zero
+from tg2go.bot.handlers.forall.commands import cancel, zero
 
 
 def RegisterHandlerCancel(dp: Dispatcher) -> None:

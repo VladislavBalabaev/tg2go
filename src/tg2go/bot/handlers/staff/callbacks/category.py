@@ -7,6 +7,8 @@ from tg2go.bot.handlers.staff.menus.category import (
     CategoryCallbackData,
     CategoryGoodCallbackData,
 )
+from tg2go.bot.handlers.staff.menus.category_action.change import CategoryChangeMenu
+from tg2go.bot.handlers.staff.menus.category_action.remove import CategoryRemoveMenu
 from tg2go.bot.handlers.staff.menus.good import GoodMenu
 from tg2go.bot.handlers.staff.menus.settings import SettingsMenu
 from tg2go.bot.lib.message.io import SendMessage
@@ -32,7 +34,7 @@ async def CategoryAddGood(
         text="Напишите название нового продукта",
     )
 
-    await state.set_state(AddGoodStates.name)
+    await state.set_state(AddGoodStates.Name)
 
 
 @router.callback_query(
@@ -41,8 +43,16 @@ async def CategoryAddGood(
 async def CategoryChangeCategory(
     callback_query: types.CallbackQuery,
     callback_data: CategoryCallbackData,
-    state: FSMContext,
-) -> None: ...
+) -> None:
+    assert isinstance(callback_query.message, types.Message)
+
+    menu = await CategoryChangeMenu(callback_data.category_id)
+
+    await callback_query.message.edit_text(
+        text=menu.text,
+        reply_markup=menu.reply_markup,
+    )
+    await callback_query.answer()
 
 
 @router.callback_query(
@@ -51,8 +61,16 @@ async def CategoryChangeCategory(
 async def CategoryRemoveCategory(
     callback_query: types.CallbackQuery,
     callback_data: CategoryCallbackData,
-    state: FSMContext,
-) -> None: ...
+) -> None:
+    assert isinstance(callback_query.message, types.Message)
+
+    menu = await CategoryRemoveMenu(callback_data.category_id)
+
+    await callback_query.message.edit_text(
+        text=menu.text,
+        reply_markup=menu.reply_markup,
+    )
+    await callback_query.answer()
 
 
 @router.callback_query(CategoryGoodCallbackData.filter())
@@ -62,13 +80,10 @@ async def CategoryGood(
 ) -> None:
     assert isinstance(callback_query.message, types.Message)
 
-    menu = await GoodMenu(
-        category_id=callback_data.category_id,
-        good_id=callback_data.good_id,
-    )
+    menu = await GoodMenu(callback_data.good_id)
 
-    await callback_query.message.edit_text(
-        text=menu.text,
+    await callback_query.message.edit_media(
+        media=menu.media,
         reply_markup=menu.reply_markup,
     )
     await callback_query.answer()

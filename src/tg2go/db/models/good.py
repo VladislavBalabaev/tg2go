@@ -46,7 +46,7 @@ class Good(Base, TimestampMixin):
         Text,
         nullable=False,
     )
-    image_url: Mapped[str] = mapped_column(
+    image_file_id: Mapped[str] = mapped_column(
         Text,
         nullable=False,
     )  # TODO: more about it
@@ -72,7 +72,6 @@ class Good(Base, TimestampMixin):
         "OrderItem",
         back_populates="good",
         cascade="all, delete-orphan",
-        lazy="selectin",
     )
 
     def GetInfoForClient(self) -> str:
@@ -81,4 +80,4 @@ class Good(Base, TimestampMixin):
 
     def GetInfoForStaff(self) -> str:
         # TODO: insert image_url somehow
-        return f"- Название: {self.name}\n- Цена: {self.price_rub}₽\n- Доступен для покупки: {'Да' if self.valid else 'Нет'}\n- Описание: {self.description}"
+        return f"- Категория позиции: {self.category.name}\n- Название: {self.name}\n- Цена: {self.price_rub}₽\n- Доступен для покупки: {'Да' if self.valid else 'Нет'}\n- Описание: {self.description}"

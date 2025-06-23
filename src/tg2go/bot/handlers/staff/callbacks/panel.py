@@ -54,8 +54,8 @@ async def PanelSettings(callback_query: types.CallbackQuery) -> None:
     await callback_query.answer()
 
 
-@router.callback_query(PanelCallbackData.filter(F.action == PanelAction.Cancel))
-async def PanelCancel(callback_query: types.CallbackQuery) -> None:
+@router.callback_query(PanelCallbackData.filter(F.action == PanelAction.Exit))
+async def PanelExit(callback_query: types.CallbackQuery) -> None:
     assert isinstance(callback_query.message, types.Message)
 
     await callback_query.message.edit_reply_markup(reply_markup=None)

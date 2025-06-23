@@ -46,3 +46,6 @@ class Category(Base, TimestampMixin):
         cascade="all, delete-orphan",
         lazy="selectin",
     )
+
+    def GetInfoForStaff(self) -> str:
+        return f"- Название: {self.name}\n- Индекс: {self.index}\n- Содержит позиций: {len(self.goods)}\n\nЧем больше индекс, тем дальше категория в списке категорий."

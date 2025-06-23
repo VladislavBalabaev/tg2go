@@ -16,7 +16,7 @@ class StaffCategoryService:
         self.GetSortedCategories = self._cat.GetSortedCategories
 
         # --- Update ---
-        self.UpdateCategoryName = self._cat.UpdateCategoryName
+        self.UpdateCategory = self._cat.UpdateCategory
 
         # --- Delete ---
         self.InvalidateCategory = self._cat.InvalidateCategory

@@ -26,7 +26,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [0.1.0] - 2025-06-20 - Vlad
+## [0.1.0] - 2025-06-22 - Vlad
+
+### Added
+
+- All callbacks & menus for /staff command
+
+## [0.1.0] - 2025-06-22 - Vlad
 
 ### Added
 
@@ -36,7 +42,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Do relationship pre-loading of dependencies in DB models except for order history
 
-## [0.1.0] - 2025-06-20 - Vlad
+## [0.1.0] - 2025-06-21 - Vlad
 
 ### Added
 

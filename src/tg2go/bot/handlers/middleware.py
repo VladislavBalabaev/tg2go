@@ -14,62 +14,59 @@ from tg2go.bot.lib.message.io import (
 from tg2go.bot.lifecycle.active import bot_state
 from tg2go.core.configs.constants import ADMIN_CHAT_IDS, STAFF_CHAT_IDS
 
-
-def IsBotActive(chat_id: int) -> bool:
-    if chat_id in STAFF_CHAT_IDS or chat_id in ADMIN_CHAT_IDS:
-        return True
-
-    return bot_state.active
+_IDS = [*ADMIN_CHAT_IDS, *STAFF_CHAT_IDS]
 
 
 class MessageLoggingMiddleware(BaseMiddleware):
     async def __call__(
         self,
         handler: Callable[[Message, dict[str, Any]], Awaitable[Any]],
-        event: Message,  # type: ignore[override]
+        message: Message,  # type: ignore[override]
         data: dict[str, Any],
     ) -> Any:
-        if await CheckIfBlocked(event.chat.id):
+        if await CheckIfBlocked(message.chat.id):
             return
 
-        await ReceiveMessage(event)
+        await ReceiveMessage(message)
 
-        if not IsBotActive(event.chat.id):
+        if not bot_state.active and message.chat.id not in _IDS:
             await SendMessage(
-                chat_id=event.chat.id,
+                chat_id=message.chat.id,
                 text="Бот не активен.",
             )
             return
 
-        return await handler(event, data)
+        return await handler(message, data)
 
 
 class CallbackLoggingMiddleware(BaseMiddleware):
     async def __call__(
         self,
         handler: Callable[[CallbackQuery, dict[str, Any]], Awaitable[Any]],
-        event: CallbackQuery,  # type: ignore[override]
+        callback_query: CallbackQuery,  # type: ignore[override]
         data: dict[str, Any],
     ) -> Any:
-        if await CheckIfBlocked(event.from_user.id):
+        assert isinstance(callback_query.message, Message)
+
+        if await CheckIfBlocked(callback_query.message.chat.id):
             return
 
         callback_data = data.get("callback_data")
         assert isinstance(callback_data, CallbackData)
 
         await ReceiveCallback(
-            query=event,
+            query=callback_query,
             data=callback_data,
         )
 
-        if not IsBotActive(event.from_user.id):
+        if not bot_state.active and "client" in callback_data.__prefix__:
             await SendMessage(
-                chat_id=event.from_user.id,
+                chat_id=callback_query.message.chat.id,
                 text="Бот не активен.",
             )
             return
 
-        return await handler(event, data)
+        return await handler(callback_query, data)
 
 
 def SetBotMiddleware(dp: Dispatcher) -> None:

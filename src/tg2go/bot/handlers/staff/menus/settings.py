@@ -1,7 +1,12 @@
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from tg2go.bot.handlers.staff.menus.common import CreateButton, Menu, StaffAction
+from tg2go.bot.handlers.staff.menus.common import (
+    SplitButtonsInTwoColumns,
+    StaffAction,
+    StaffPosition,
+    TextMenu,
+)
 from tg2go.db.models.common.types import CategoryId
 from tg2go.services.staff.category import StaffCategoryService
 
@@ -19,41 +24,37 @@ class SettingsCategoryCallbackData(CallbackData, prefix="staff.settings.cat"):
     category_id: CategoryId
 
 
-async def SettingsMenu() -> Menu:
+def CreateButton(cb: type[CallbackData], action: StaffAction) -> InlineKeyboardButton:
+    return InlineKeyboardButton(
+        text=action.value,
+        callback_data=cb(action=action).pack(),
+    )
+
+
+async def SettingsMenu() -> TextMenu:
     srv = StaffCategoryService.Create()
     categories = await srv.GetSortedCategories()
 
-    buttons = []
-
-    group = []
-    for i, cat in enumerate(categories):
-        group.append(
-            InlineKeyboardButton(
-                text=cat.name,
-                callback_data=SettingsCategoryCallbackData(
-                    category_id=cat.category_id
-                ).pack(),
-            )
+    plain_buttons = [
+        InlineKeyboardButton(
+            text=cat.name,
+            callback_data=SettingsCategoryCallbackData(
+                category_id=cat.category_id
+            ).pack(),
         )
+        for cat in categories
+    ]
 
-        if i % 2 == 1:
-            buttons.append(group)
-            group = []
-
-    if group:
-        buttons.append(group)
-
-    # TODO: add text
-    text = "..."
+    text = "🔴 Бот не работает" + StaffPosition.Settings()
     buttons = [
         [CreateButton(cb=SettingsCallbackData, action=SettingsAction.AddCategory)],
-        *buttons,
+        *SplitButtonsInTwoColumns(plain_buttons),
         [CreateButton(cb=SettingsCallbackData, action=SettingsAction.Back)],
     ]
 
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-    return Menu(
+    return TextMenu(
         text=text,
         reply_markup=markup,
     )

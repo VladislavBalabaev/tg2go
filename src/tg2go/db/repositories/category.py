@@ -4,6 +4,7 @@ from typing import TypeVar
 from sqlalchemy import desc, select, update
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 from tg2go.db.models.category import Category
 from tg2go.db.models.common.types import CategoryId
@@ -56,23 +57,28 @@ class CategoryRepository:
             return categories
 
     # --- Update ---
-    async def UpdateCategoryName(self, category_id: CategoryId, name: str) -> None:
+    async def UpdateCategory(
+        self,
+        category_id: CategoryId,
+        column: InstrumentedAttribute[T],
+        value: T,
+    ) -> None:
         async with self.session() as session:
             result = await session.execute(
                 update(Category)
                 .where(Category.category_id == category_id)
-                .values({Category.name: name})
+                .values({column.key: value})
             )
 
             if result.rowcount == 0:
                 raise NoResultFound(
-                    f"Failed to update: '{Category.name}={name}'. No Category(category_id={category_id}) found."
+                    f"Failed to update: '{column}={value}'. No Category(category_id={category_id}) found."
                 )
 
             await session.commit()
 
         logging.info(
-            f"Category(category_id={category_id}) updated: '{Category.name}={name}' successfully."
+            f"Category(category_id={category_id}) updated: '{column}={value}' successfully."
         )
 
     # --- Delete ---

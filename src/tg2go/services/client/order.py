@@ -101,7 +101,7 @@ class ClientOrderService:
             qty: int = item.quantity
             price: Decimal = item.unit_price_rub
 
-            info += f"{i}. {name} - {qty} шт. × {price}₽ = {price * qty}₽\n"
+            info += f"{i}. {name}, {qty} шт. × {price}₽ = {price * qty}₽\n"
 
         info += f"\nИтого: {order.total_price_rub}₽"
 

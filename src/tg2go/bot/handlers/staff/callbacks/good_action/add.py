@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from tg2go.bot.handlers.staff.menus.category import CategoryMenu
+from tg2go.bot.lib.message.file import DownloadImage
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
 from tg2go.services.staff.good import StaffGoodService
 
@@ -13,13 +14,13 @@ router = Router()
 
 
 class AddGoodStates(StatesGroup):
-    name = State()
-    price_rub = State()
-    description = State()
-    image_url = State()
+    Name = State()
+    PriceRub = State()
+    Description = State()
+    ImageUrl = State()
 
 
-@router.message(StateFilter(AddGoodStates.name), F.content_type == "text")
+@router.message(StateFilter(AddGoodStates.Name), F.content_type == "text")
 async def CommandStaffAddGoodName(
     message: types.Message,
     state: FSMContext,
@@ -35,10 +36,10 @@ async def CommandStaffAddGoodName(
         text="Укажите цену в рублях числом в формате `123` или `123.45`",
     )
 
-    await state.set_state(AddGoodStates.price_rub)
+    await state.set_state(AddGoodStates.PriceRub)
 
 
-@router.message(StateFilter(AddGoodStates.price_rub), F.content_type == "text")
+@router.message(StateFilter(AddGoodStates.PriceRub), F.content_type == "text")
 async def CommandStaffAddGoodPriceRub(
     message: types.Message,
     state: FSMContext,
@@ -51,7 +52,7 @@ async def CommandStaffAddGoodPriceRub(
         if not message.text.isdigit():
             await SendMessage(
                 chat_id=message.chat.id,
-                text="Индекс обязян быть целым положительным числом",
+                text="❌ Цена обязана быть в числовом формате `123` или `123.45`",
                 context=ContextIO.UserFailed,
             )
             return
@@ -65,10 +66,10 @@ async def CommandStaffAddGoodPriceRub(
         text="Укажите описание продукта, добавляя ингридиенты и граммовки.",
     )
 
-    await state.set_state(AddGoodStates.description)
+    await state.set_state(AddGoodStates.Description)
 
 
-@router.message(StateFilter(AddGoodStates.description), F.content_type == "text")
+@router.message(StateFilter(AddGoodStates.Description), F.content_type == "text")
 async def CommandStaffAddGoodDescription(
     message: types.Message,
     state: FSMContext,
@@ -81,28 +82,38 @@ async def CommandStaffAddGoodDescription(
 
     await SendMessage(
         chat_id=message.chat.id,
-        text="kiday pape url fotochki",
+        text="Отправьте фотографию для новой позиции в меню",
     )
 
-    await state.set_state(AddGoodStates.image_url)
+    await state.set_state(AddGoodStates.ImageUrl)
 
 
-@router.message(StateFilter(AddGoodStates.image_url), F.content_type == "text")
+@router.message(StateFilter(AddGoodStates.ImageUrl))
 async def CommandStaffAddGoodImageUrl(
     message: types.Message,
     state: FSMContext,
 ) -> None:
-    assert message.text is not None
+    if message.photo is None:
+        await SendMessage(
+            chat_id=message.chat.id,
+            text="❌ Вы отправили не фото для создаваемой позиции.\n\nОтправьте, пожалуйста, фотографию для новой позиции в меню",
+            context=ContextIO.UserFailed,
+        )
+        return
+
+    photo = message.photo[-1]
+
+    await DownloadImage(photo)
 
     data = await state.get_data()
-    data.update({"image_url": message.text})
+    data.update({"image_file_id": photo.file_id})
 
     srv = StaffGoodService.Create()
     await srv.InsertNewGood(**data)
 
     await SendMessage(
         chat_id=message.chat.id,
-        text="Новый продукт в категории успешно создан",
+        text="✅ Новая позиция в категории успешно создана",
     )
 
     menu = await CategoryMenu(data["category_id"])

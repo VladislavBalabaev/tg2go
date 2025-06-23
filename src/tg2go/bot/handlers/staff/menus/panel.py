@@ -1,39 +1,46 @@
 from aiogram.filters.callback_data import CallbackData
-from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from tg2go.bot.handlers.staff.menus.common import CreateButton, Menu, StaffAction
+from tg2go.bot.handlers.staff.menus.common import StaffAction, TextMenu
 from tg2go.bot.lifecycle.active import bot_state
 
 
 class PanelAction(StaffAction):
-    Activate = "✅ Включить бота"
-    Deactivate = "❌ Выключить бота"
+    Activate = "🚀 Включить бота"
+    Deactivate = "💤 Выключить бота"
     Settings = "🛠️ Настройки"
-    Cancel = "Выйти из меню"
+    Exit = "Выйти из меню"
 
 
 class PanelCallbackData(CallbackData, prefix="staff.panel"):
     action: PanelAction
 
 
-def PanelMenu() -> Menu:
+def CreateButton(cb: type[CallbackData], action: StaffAction) -> InlineKeyboardButton:
+    return InlineKeyboardButton(
+        text=action.value,
+        callback_data=cb(action=action).pack(),
+    )
+
+
+def PanelMenu() -> TextMenu:
     if bot_state.active:
         text = "🟢 Бот работает и принимает заказы\n\nЧтобы поменять настройки бота, сперва выключите его"
         buttons = [
             [CreateButton(cb=PanelCallbackData, action=PanelAction.Deactivate)],
-            [CreateButton(cb=PanelCallbackData, action=PanelAction.Cancel)],
+            [CreateButton(cb=PanelCallbackData, action=PanelAction.Exit)],
         ]
     else:
         text = "🔴 Бот не работает\n\nПользователи не могут создать заказ"
         buttons = [
             [CreateButton(cb=PanelCallbackData, action=PanelAction.Activate)],
             [CreateButton(cb=PanelCallbackData, action=PanelAction.Settings)],
-            [CreateButton(cb=PanelCallbackData, action=PanelAction.Cancel)],
+            [CreateButton(cb=PanelCallbackData, action=PanelAction.Exit)],
         ]
 
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-    return Menu(
+    return TextMenu(
         text=text,
         reply_markup=markup,
     )

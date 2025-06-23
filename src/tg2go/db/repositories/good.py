@@ -26,13 +26,13 @@ class GoodRepository:
         name: str,
         price_rub: Decimal,
         description: str,
-        image_url: str,
+        image_file_id: str,
     ) -> None:
         good = Good(
             name=name,
             price_rub=price_rub,
             description=description,
-            image_url=image_url,
+            image_file_id=image_file_id,
             category_id=category_id,
         )
 

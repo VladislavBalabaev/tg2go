@@ -151,7 +151,6 @@ async def ReceiveCallback(query: types.CallbackQuery, data: CallbackData) -> Non
     logging.info(
         f"{part} {SignIO.In.value} {ContextIO.Callback.value} {data.__prefix__}, model_dump={data.model_dump()}"
     )
-    logging.debug(f"{part}, model_dump={data.model_dump()}")
 
 
 async def DeleteMessage(chat_id: int, message_id: int) -> None:
