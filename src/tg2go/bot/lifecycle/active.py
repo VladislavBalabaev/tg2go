@@ -8,11 +8,11 @@ class BotState:
 
     def Activate(self) -> None:
         self.active = True
-        logging.info("Bot activated for clients")
+        logging.warning("Bot activated for clients")
 
     def Deactivate(self) -> None:
         self.active = False
-        logging.info("Bot deactivated for clients")
+        logging.warning("Bot deactivated for clients")
 
 
 bot_state = BotState()

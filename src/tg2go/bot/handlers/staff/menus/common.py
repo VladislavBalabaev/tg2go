@@ -1,8 +1,14 @@
+import logging
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+from aiogram import types
+from aiogram.exceptions import TelegramBadRequest, TelegramNetworkError
 
+from tg2go.bot.lib.chat.username import GetChatUserLoggingPart
+from tg2go.bot.lib.message.image import Image
+from tg2go.bot.lib.message.io import ContextIO, SendImage, SignIO
 from tg2go.db.models.category import Category
 from tg2go.db.models.good import Good
 
@@ -12,15 +18,10 @@ class StaffAction(str, Enum):
 
 
 @dataclass
-class TextMenu:
-    text: str
-    reply_markup: InlineKeyboardMarkup | None
-
-
-@dataclass
-class MediaMenu:
-    media: InputMediaPhoto
-    reply_markup: InlineKeyboardMarkup | None
+class Menu:
+    image_dir: Path
+    caption: str
+    reply_markup: types.InlineKeyboardMarkup | None
 
 
 class StaffPosition:
@@ -49,8 +50,8 @@ class StaffPosition:
 
 
 def SplitButtonsInTwoColumns(
-    plain_buttons: list[InlineKeyboardButton],
-) -> list[list[InlineKeyboardButton]]:
+    plain_buttons: list[types.InlineKeyboardButton],
+) -> list[list[types.InlineKeyboardButton]]:
     new_buttons = []
 
     group = []
@@ -65,3 +66,54 @@ def SplitButtonsInTwoColumns(
         new_buttons.append(group)
 
     return new_buttons
+
+
+async def SendMenu(chat_id: int, menu: Menu) -> types.Message | None:
+    # TODO: make a singleton staff image among chat ids
+
+    return await SendImage(
+        chat_id=chat_id,
+        image_dir=menu.image_dir,
+        caption=menu.caption,
+        reply_markup=menu.reply_markup,
+    )
+
+
+async def ChangeToNewMenu(
+    callback_query: types.CallbackQuery,
+    new_menu: Menu,
+) -> None:
+    assert isinstance(callback_query.message, types.Message)
+
+    image = Image(new_menu.image_dir)
+
+    media = types.InputMediaPhoto(
+        media=image.GetFileId(),
+        caption=new_menu.caption,
+        parse_mode="HTML",
+    )
+
+    try:
+        await callback_query.message.edit_media(
+            media=media,
+            reply_markup=new_menu.reply_markup,
+        )
+    except (TelegramNetworkError, TelegramBadRequest) as e:
+        logging.error(e)
+        logging.info(f"file_id={image.GetFileId()} is expired. Sending raw image.")
+
+        media.media = image.GetSource()
+
+        message = await callback_query.message.edit_media(
+            media=media,
+            reply_markup=new_menu.reply_markup,
+        )
+
+        assert isinstance(message, types.Message)
+        assert isinstance(message.photo, list)
+        image.UpdateFileId(message.photo[-1].file_id)
+
+    part = await GetChatUserLoggingPart(callback_query.message.chat.id)
+    logging.info(
+        f"{part} {SignIO.Out.value}{ContextIO.Doc.value} {repr(media.caption)}"
+    )

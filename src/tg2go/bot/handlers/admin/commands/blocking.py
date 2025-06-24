@@ -7,7 +7,7 @@ from aiogram.filters.state import StateFilter
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from tg2go.bot.lib.chat.block import BlockUser, CheckIfBlocked, UnblockUser
-from tg2go.bot.lib.message.filters import AdminFilter
+from tg2go.bot.lib.message.filter import AdminFilter
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
 from tg2go.services.user import UserService
 

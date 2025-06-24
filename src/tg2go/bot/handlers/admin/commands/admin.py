@@ -2,7 +2,7 @@ from aiogram import Router, types
 from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 
-from tg2go.bot.lib.message.filters import AdminFilter
+from tg2go.bot.lib.message.filter import AdminFilter
 from tg2go.bot.lib.message.io import SendMessage
 
 router = Router()

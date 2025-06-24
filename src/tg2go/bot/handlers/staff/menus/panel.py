@@ -1,7 +1,8 @@
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from tg2go.bot.handlers.staff.menus.common import StaffAction, TextMenu
+from tg2go.bot.handlers.staff.menus.common import Menu, StaffAction
+from tg2go.bot.lib.message.image import GetHeaderDir
 from tg2go.bot.lifecycle.active import bot_state
 
 
@@ -23,7 +24,7 @@ def CreateButton(cb: type[CallbackData], action: StaffAction) -> InlineKeyboardB
     )
 
 
-def PanelMenu() -> TextMenu:
+def PanelMenu() -> Menu:
     if bot_state.active:
         text = "🟢 Бот работает и принимает заказы\n\nЧтобы поменять настройки бота, сперва выключите его"
         buttons = [
@@ -40,7 +41,8 @@ def PanelMenu() -> TextMenu:
 
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-    return TextMenu(
-        text=text,
+    return Menu(
+        image_dir=GetHeaderDir(),
+        caption=text,
         reply_markup=markup,
     )

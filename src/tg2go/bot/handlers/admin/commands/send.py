@@ -4,7 +4,7 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-from tg2go.bot.lib.message.filters import AdminFilter
+from tg2go.bot.lib.message.filter import AdminFilter
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
 from tg2go.services.user import UserService
 

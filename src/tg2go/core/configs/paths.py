@@ -2,11 +2,12 @@ from pathlib import Path
 
 _DIR_ROOT = Path(__file__).resolve().parent.parent.parent.parent.parent
 _DIR_DATA = _DIR_ROOT / "data"
-_DIR_DOCS = _DIR_ROOT / "docs" / "bot"
+_DIR_DOCS = _DIR_ROOT / "docs"
 _DIR_LOGS = _DIR_DATA / "logs"
 
 DIR_TEMP = _DIR_DATA / "temp"
 DIR_IMAGES = _DIR_DATA / "images"
+DIR_HEADER = _DIR_DOCS / "header"
 
 _dirs = [
     _DIR_DATA,
@@ -17,9 +18,7 @@ _dirs = [
 
 PATH_ENV = _DIR_ROOT / ".env"
 PATH_BOT_LOGS = _DIR_LOGS / "bot" / "bot.log"
-
-PATH_TERMS_OF_USE = _DIR_DOCS / "terms_of_service.pdf"
-PATH_TERMS_OF_USE = _DIR_DOCS / "header.png"
+PATH_TERMS = _DIR_DOCS / "terms" / "source.pdf"
 
 
 def EnsurePaths() -> None:

@@ -21,23 +21,13 @@ pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt
 
 ## Pre-Commit Actions
 
-### Format & Lint
-
 ```bash
 black src/
 
 ruff check src/ --fix
-```
 
-### Type Check
-
-```bash
 mypy src/
-```
 
-### Run Tests
-
-```bash
 pytest
 ```
 

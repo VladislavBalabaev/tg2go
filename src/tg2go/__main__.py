@@ -8,9 +8,9 @@ from tg2go.bot.handlers.forall.register import (
 )
 from tg2go.bot.handlers.middleware import SetBotMiddleware
 from tg2go.bot.handlers.staff.register import RegisterStaffHandlers
-from tg2go.bot.lib.notifications import admin
-from tg2go.bot.lib.notifications.erroring import SetExceptionHandlers
-from tg2go.bot.lib.notifications.pending import ProcessPendingUpdates
+from tg2go.bot.lib.notification import admin
+from tg2go.bot.lib.notification.erroring import SetExceptionHandlers
+from tg2go.bot.lib.notification.pending import ProcessPendingUpdates
 from tg2go.bot.lifecycle.creator import bot, dp
 from tg2go.bot.lifecycle.menu import SetMenu
 from tg2go.core.configs.paths import EnsurePaths

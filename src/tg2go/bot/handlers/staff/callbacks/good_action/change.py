@@ -5,15 +5,15 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
+from tg2go.bot.handlers.staff.menus.common import ChangeToNewMenu, SendMenu
 from tg2go.bot.handlers.staff.menus.good import GoodMenu
 from tg2go.bot.handlers.staff.menus.good_action.change import (
     GoodChangeAction,
     GoodChangeCallbackData,
     GoodChangeMenu,
 )
-from tg2go.bot.lib.message.file import DownloadImage
+from tg2go.bot.lib.message.image import GetGoodImageDir, Image
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
-from tg2go.bot.lifecycle.creator import bot
 from tg2go.db.models.good import Good
 from tg2go.services.staff.good import StaffGoodService
 
@@ -65,16 +65,12 @@ async def GoodChangeNameChange(
         chat_id=message.chat.id,
         text="✅ Название позиции успешно изменено",
     )
-
-    menu = await GoodChangeMenu(data["good_id"])
-    await bot.send_photo(
-        chat_id=message.chat.id,
-        photo=menu.media.media,
-        caption=menu.media.caption,
-        reply_markup=menu.reply_markup,
-    )
-
     await state.clear()
+
+    await SendMenu(
+        chat_id=message.chat.id,
+        menu=await GoodChangeMenu(data["good_id"]),
+    )
 
 
 class GoodChangePriceRubStates(StatesGroup):
@@ -135,16 +131,12 @@ async def GoodChangePriceRubChange(
         chat_id=message.chat.id,
         text="✅ Цена позиции успешно изменена",
     )
-
-    menu = await GoodChangeMenu(data["good_id"])
-    await bot.send_photo(
-        chat_id=message.chat.id,
-        photo=menu.media.media,
-        caption=menu.media.caption,
-        reply_markup=menu.reply_markup,
-    )
-
     await state.clear()
+
+    await SendMenu(
+        chat_id=message.chat.id,
+        menu=await GoodChangeMenu(data["good_id"]),
+    )
 
 
 class GoodChangeDescriptionStates(StatesGroup):
@@ -196,16 +188,12 @@ async def GoodChangeDescriptionChange(
         chat_id=message.chat.id,
         text="✅ Описание позиции успешно изменено",
     )
-
-    menu = await GoodChangeMenu(data["good_id"])
-    await bot.send_photo(
-        chat_id=message.chat.id,
-        photo=menu.media.media,
-        caption=menu.media.caption,
-        reply_markup=menu.reply_markup,
-    )
-
     await state.clear()
+
+    await SendMenu(
+        chat_id=message.chat.id,
+        menu=await GoodChangeMenu(data["good_id"]),
+    )
 
 
 class GoodChangeImageUrlStates(StatesGroup):
@@ -250,29 +238,19 @@ async def GoodChangeImageUrlChange(
 
     data = await state.get_data()
 
-    photo = message.photo[-1]
-    await DownloadImage(photo)
+    image = Image(GetGoodImageDir(data["good_id"]))
+    await image.DownloadSource(message.photo[-1])
 
-    srv = StaffGoodService.Create()
-    await srv.UpdateGood(
-        good_id=data["good_id"],
-        column=Good.image_file_id,
-        value=photo.file_id,
-    )
     await SendMessage(
         chat_id=message.chat.id,
         text="✅ Новое фото позиции установлено",
     )
-
-    menu = await GoodChangeMenu(data["good_id"])
-    await bot.send_photo(
-        chat_id=message.chat.id,
-        photo=menu.media.media,
-        caption=menu.media.caption,
-        reply_markup=menu.reply_markup,
-    )
-
     await state.clear()
+
+    await SendMenu(
+        chat_id=message.chat.id,
+        menu=await GoodChangeMenu(data["good_id"]),
+    )
 
 
 @router.callback_query(GoodChangeCallbackData.filter(F.action == GoodChangeAction.Back))
@@ -280,12 +258,8 @@ async def GoodChangeBack(
     callback_query: types.CallbackQuery,
     callback_data: GoodChangeCallbackData,
 ) -> None:
-    assert isinstance(callback_query.message, types.Message)
-
-    menu = await GoodMenu(callback_data.good_id)
-
-    await callback_query.message.edit_media(
-        media=menu.media,
-        reply_markup=menu.reply_markup,
+    await ChangeToNewMenu(
+        callback_query=callback_query,
+        new_menu=await GoodMenu(callback_data.good_id),
     )
     await callback_query.answer()

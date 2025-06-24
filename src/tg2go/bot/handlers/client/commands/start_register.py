@@ -7,7 +7,7 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemo
 
 from tg2go.bot.handlers.client.commands.start_order import SendPanelMenu
 from tg2go.bot.lib.message.io import ContextIO, SendDocument, SendMessage
-from tg2go.core.configs.paths import PATH_TERMS_OF_USE
+from tg2go.core.configs.paths import PATH_TERMS
 from tg2go.db.models.user import User
 from tg2go.services.client.order import CreateNewOrder
 from tg2go.services.user import UserService
@@ -81,7 +81,7 @@ async def CommandStartGetPhoneNumber(message: types.Message, state: FSMContext) 
     # TODO: create actual terms of service
     await SendDocument(
         chat_id=message.chat.id,
-        document=types.FSInputFile(PATH_TERMS_OF_USE),
+        document=types.FSInputFile(PATH_TERMS),
         caption="Ознакомьтесь с условиями Пользовательского соглашения и подтвердите своё согласие на обработку персональных данных, нажав на кнопку 📄 Да, я принимаю\n\nЕсли меню с кнопками скрыто, нажмите на значок 🎛 в правом нижнем углу",
         reply_markup=keyboard,
     )

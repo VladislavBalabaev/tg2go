@@ -5,8 +5,7 @@ from typing import Any
 from aiogram import types
 
 from tg2go.bot.lib.message.io import SendDocument
-from tg2go.bot.lifecycle.creator import bot
-from tg2go.core.configs.paths import DIR_IMAGES, DIR_TEMP
+from tg2go.core.configs.paths import DIR_TEMP
 
 
 def ToJSONText(structure: dict[Any, Any] | list[dict[Any, Any]]) -> str:
@@ -25,18 +24,3 @@ async def SendTemporaryFileFromText(chat_id: int, text: str) -> None:
     await SendDocument(chat_id=chat_id, document=types.FSInputFile(file_path))
 
     os.remove(file_path)
-
-
-async def DownloadImage(photo: types.PhotoSize) -> None:
-    file = await bot.get_file(photo.file_id)
-    assert file.file_path is not None, "File path is None"
-
-    await bot.download_file(
-        file.file_path,
-        destination=DIR_IMAGES / f"{file.file_id}.png",
-    )
-
-
-# reupload images and restore their file_ids
-async def AccessImage(file_id: str) -> types.FSInputFile:
-    return types.FSInputFile(DIR_IMAGES / f"{file_id}.png")

@@ -26,13 +26,11 @@ class GoodRepository:
         name: str,
         price_rub: Decimal,
         description: str,
-        image_file_id: str,
-    ) -> None:
+    ) -> GoodId:
         good = Good(
             name=name,
             price_rub=price_rub,
             description=description,
-            image_file_id=image_file_id,
             category_id=category_id,
         )
 
@@ -45,6 +43,8 @@ class GoodRepository:
                 await session.rollback()
                 logging.error(f"{good} already exists. Insertion failed.")
                 raise
+
+        return good.good_id
 
     # --- Read ---
     async def GetGood(self, good_id: GoodId) -> Good:

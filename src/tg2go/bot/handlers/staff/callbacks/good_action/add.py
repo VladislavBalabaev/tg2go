@@ -6,7 +6,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from tg2go.bot.handlers.staff.menus.category import CategoryMenu
-from tg2go.bot.lib.message.file import DownloadImage
+from tg2go.bot.handlers.staff.menus.common import SendMenu
+from tg2go.bot.lib.message.image import GetGoodImageDir, Image
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
 from tg2go.services.staff.good import StaffGoodService
 
@@ -101,26 +102,21 @@ async def CommandStaffAddGoodImageUrl(
         )
         return
 
-    photo = message.photo[-1]
-
-    await DownloadImage(photo)
-
     data = await state.get_data()
-    data.update({"image_file_id": photo.file_id})
 
     srv = StaffGoodService.Create()
-    await srv.InsertNewGood(**data)
+    good_id = await srv.InsertNewGood(**data)
+
+    image = Image(GetGoodImageDir(good_id))
+    await image.DownloadSource(message.photo[-1])
 
     await SendMessage(
         chat_id=message.chat.id,
         text="✅ Новая позиция в категории успешно создана",
     )
-
-    menu = await CategoryMenu(data["category_id"])
-    await SendMessage(
-        chat_id=message.chat.id,
-        text=menu.text,
-        reply_markup=menu.reply_markup,
-    )
-
     await state.clear()
+
+    await SendMenu(
+        chat_id=message.chat.id,
+        menu=await CategoryMenu(data["category_id"]),
+    )

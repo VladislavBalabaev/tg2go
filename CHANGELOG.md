@@ -26,7 +26,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [0.1.0] - 2025-06-22 - Vlad
+## [0.1.0] - 2025-06-24 - Vlad
+
+### Added
+
+- Add header to /staff
+- Dynamically work with images
+- Remove image file_id from DB
+
+## [0.1.0] - 2025-06-23 - Vlad
 
 ### Added
 

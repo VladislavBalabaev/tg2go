@@ -46,10 +46,6 @@ class Good(Base, TimestampMixin):
         Text,
         nullable=False,
     )
-    image_file_id: Mapped[str] = mapped_column(
-        Text,
-        nullable=False,
-    )  # TODO: more about it
     available: Mapped[bool] = mapped_column(
         Boolean,
         default=True,

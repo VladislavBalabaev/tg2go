@@ -9,6 +9,7 @@ from tg2go.bot.handlers.staff.menus.category_action.change import (
     CategoryChangeCallbackData,
     CategoryChangeMenu,
 )
+from tg2go.bot.handlers.staff.menus.common import ChangeToNewMenu, SendMenu
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
 from tg2go.db.models.category import Category
 from tg2go.services.staff.category import StaffCategoryService
@@ -63,15 +64,12 @@ async def CategoryChangeNameChange(
         chat_id=message.chat.id,
         text="✅ Название категории успешно изменено",
     )
-
-    menu = await CategoryChangeMenu(data["category_id"])
-    await SendMessage(
-        chat_id=message.chat.id,
-        text=menu.text,
-        reply_markup=menu.reply_markup,
-    )
-
     await state.clear()
+
+    await SendMenu(
+        chat_id=message.chat.id,
+        menu=await CategoryChangeMenu(data["category_id"]),
+    )
 
 
 class CategoryChangeIndexStates(StatesGroup):
@@ -129,15 +127,12 @@ async def CategoryChangeIndexChange(
         chat_id=message.chat.id,
         text="✅ Индекс категории успешно изменен",
     )
-
-    menu = await CategoryChangeMenu(data["category_id"])
-    await SendMessage(
-        chat_id=message.chat.id,
-        text=menu.text,
-        reply_markup=menu.reply_markup,
-    )
-
     await state.clear()
+
+    await SendMenu(
+        chat_id=message.chat.id,
+        menu=await CategoryChangeMenu(data["category_id"]),
+    )
 
 
 @router.callback_query(
@@ -147,12 +142,8 @@ async def CategoryChangeBack(
     callback_query: types.CallbackQuery,
     callback_data: CategoryChangeCallbackData,
 ) -> None:
-    assert isinstance(callback_query.message, types.Message)
-
-    menu = await CategoryMenu(callback_data.category_id)
-
-    await callback_query.message.edit_text(
-        text=menu.text,
-        reply_markup=menu.reply_markup,
+    await ChangeToNewMenu(
+        callback_query=callback_query,
+        new_menu=await CategoryMenu(callback_data.category_id),
     )
     await callback_query.answer()

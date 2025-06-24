@@ -2,26 +2,37 @@ import asyncio
 import logging
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 
 from aiogram import types
-from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
+from aiogram.exceptions import (
+    TelegramBadRequest,
+    TelegramForbiddenError,
+    TelegramNetworkError,
+)
 from aiogram.filters.callback_data import CallbackData
 from aiolimiter import AsyncLimiter
 
 from tg2go.bot.lib.chat.block import UserBlockedBot
 from tg2go.bot.lib.chat.username import GetChatUserLoggingPart
+from tg2go.bot.lib.message.image import Image
 from tg2go.bot.lifecycle.creator import bot
 from tg2go.services.user import UserService
 
 
 class ContextIO(str, Enum):
     No = ""
+
     Error = " \033[91m[Error]\033[0m"
-    Blocked = " \033[91m[Blocked]\033[0m"
+    ForbiddenError = " \033[91m[ForbiddenError]\033[0m"
     BadRequest = " \033[91m[BadRequest]\033[0m"
+    NetworkError = " \033[91m[NetworkError]\033[0m"
+
     UserFailed = " \033[91m[UserFailed]\033[0m"
+
     Callback = " \033[92m[Callback]\033[0m"
     Doc = " \033[92m[Document]\033[0m"
+
     Pending = " \033[96m[Pending]\033[0m"
     ZeroMessage = " \033[96m[ZeroMessage]\033[0m"
     NoText = " \033[96m[NoText]\033[0m"
@@ -56,14 +67,102 @@ async def SendDocument(
         )
 
     except TelegramForbiddenError:
-        add = ContextIO.Blocked
+        add = ContextIO.ForbiddenError
         await UserBlockedBot(chat_id)
 
-    except TelegramBadRequest:
+    except TelegramBadRequest as e:
+        logging.error(e)
         add = ContextIO.BadRequest
 
     part = await GetChatUserLoggingPart(chat_id)
     logging.info(f"{part} {SignIO.Out.value}{add.value}{ContextIO.Doc.value} {caption}")
+
+    return message
+
+
+async def _SendMedia(
+    chat_id: int,
+    media: types.InputMediaPhoto,
+    reply_markup: (
+        types.ReplyKeyboardMarkup
+        | types.ReplyKeyboardRemove
+        | types.InlineKeyboardMarkup
+        | None
+    ) = None,
+    context: ContextIO = ContextIO.No,
+) -> types.Message | None:
+    add = ContextIO.No
+
+    message: types.Message | None = None
+    try:
+        message = await bot.send_photo(
+            chat_id=chat_id,
+            photo=media.media,
+            caption=media.caption,
+            reply_markup=reply_markup,
+        )
+
+    except TelegramForbiddenError:
+        add = ContextIO.ForbiddenError
+        await UserBlockedBot(chat_id)
+    except TelegramBadRequest as e:
+        logging.error(e)
+        add = ContextIO.BadRequest
+    except TelegramNetworkError as e:
+        logging.error(e)
+        add = ContextIO.NetworkError
+
+    part = await GetChatUserLoggingPart(chat_id)
+    logging.info(
+        f"{part} {SignIO.Out.value}{add.value}{context.value} {repr(media.caption)}"
+    )
+
+    return message
+
+
+async def SendImage(
+    chat_id: int,
+    image_dir: Path,
+    caption: str,
+    reply_markup: (
+        types.ReplyKeyboardMarkup
+        | types.ReplyKeyboardRemove
+        | types.InlineKeyboardMarkup
+        | None
+    ) = None,
+    context: ContextIO = ContextIO.No,
+) -> types.Message | None:
+
+    image = Image(image_dir)
+
+    media = types.InputMediaPhoto(
+        media=image.GetFileId(),
+        caption=caption,
+        parse_mode="HTML",
+    )
+
+    message = await _SendMedia(
+        chat_id=chat_id,
+        media=media,
+        reply_markup=reply_markup,
+        context=context,
+    )
+
+    if not message:
+        logging.info(f"file_id={image.GetFileId()} is expired. Sending raw image.")
+
+        media.media = image.GetSource()
+
+        message = await _SendMedia(
+            chat_id=chat_id,
+            media=media,
+            reply_markup=reply_markup,
+            context=context,
+        )
+
+        assert isinstance(message, types.Message)
+        assert isinstance(message.photo, list)
+        image.UpdateFileId(message.photo[-1].file_id)
 
     return message
 
@@ -90,10 +189,11 @@ async def SendMessage(
         )
 
     except TelegramForbiddenError:
-        add = ContextIO.Blocked
+        add = ContextIO.ForbiddenError
         await UserBlockedBot(chat_id)
 
-    except TelegramBadRequest:
+    except TelegramBadRequest as e:
+        logging.error(e)
         add = ContextIO.BadRequest
 
     part = await GetChatUserLoggingPart(chat_id)
@@ -115,7 +215,10 @@ async def SendMessagesToGroup(messages: list[PersonalMsg]) -> None:
         nonlocal limiter
 
         async with limiter:
-            await SendMessage(chat_id=message.chat_id, text=message.text)
+            await SendMessage(
+                chat_id=message.chat_id,
+                text=message.text,
+            )
 
     tasks = []
     for message in messages:
@@ -159,7 +262,7 @@ async def DeleteMessage(chat_id: int, message_id: int) -> None:
     try:
         await bot.delete_message(chat_id=chat_id, message_id=message_id)
     except TelegramForbiddenError:
-        add = ContextIO.Blocked
+        add = ContextIO.ForbiddenError
         await UserBlockedBot(chat_id)
 
     except TelegramBadRequest:

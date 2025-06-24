@@ -9,6 +9,7 @@ from tg2go.bot.handlers.staff.menus.category import (
 )
 from tg2go.bot.handlers.staff.menus.category_action.change import CategoryChangeMenu
 from tg2go.bot.handlers.staff.menus.category_action.remove import CategoryRemoveMenu
+from tg2go.bot.handlers.staff.menus.common import ChangeToNewMenu
 from tg2go.bot.handlers.staff.menus.good import GoodMenu
 from tg2go.bot.handlers.staff.menus.settings import SettingsMenu
 from tg2go.bot.lib.message.io import SendMessage
@@ -44,13 +45,9 @@ async def CategoryChangeCategory(
     callback_query: types.CallbackQuery,
     callback_data: CategoryCallbackData,
 ) -> None:
-    assert isinstance(callback_query.message, types.Message)
-
-    menu = await CategoryChangeMenu(callback_data.category_id)
-
-    await callback_query.message.edit_text(
-        text=menu.text,
-        reply_markup=menu.reply_markup,
+    await ChangeToNewMenu(
+        callback_query=callback_query,
+        new_menu=await CategoryChangeMenu(callback_data.category_id),
     )
     await callback_query.answer()
 
@@ -62,13 +59,9 @@ async def CategoryRemoveCategory(
     callback_query: types.CallbackQuery,
     callback_data: CategoryCallbackData,
 ) -> None:
-    assert isinstance(callback_query.message, types.Message)
-
-    menu = await CategoryRemoveMenu(callback_data.category_id)
-
-    await callback_query.message.edit_text(
-        text=menu.text,
-        reply_markup=menu.reply_markup,
+    await ChangeToNewMenu(
+        callback_query=callback_query,
+        new_menu=await CategoryRemoveMenu(callback_data.category_id),
     )
     await callback_query.answer()
 
@@ -78,25 +71,17 @@ async def CategoryGood(
     callback_query: types.CallbackQuery,
     callback_data: CategoryGoodCallbackData,
 ) -> None:
-    assert isinstance(callback_query.message, types.Message)
-
-    menu = await GoodMenu(callback_data.good_id)
-
-    await callback_query.message.edit_media(
-        media=menu.media,
-        reply_markup=menu.reply_markup,
+    await ChangeToNewMenu(
+        callback_query=callback_query,
+        new_menu=await GoodMenu(callback_data.good_id),
     )
     await callback_query.answer()
 
 
 @router.callback_query(CategoryCallbackData.filter(F.action == CategoryAction.Back))
 async def CategoryBack(callback_query: types.CallbackQuery) -> None:
-    assert isinstance(callback_query.message, types.Message)
-
-    menu = await SettingsMenu()
-
-    await callback_query.message.edit_text(
-        text=menu.text,
-        reply_markup=menu.reply_markup,
+    await ChangeToNewMenu(
+        callback_query=callback_query,
+        new_menu=await SettingsMenu(),
     )
     await callback_query.answer()

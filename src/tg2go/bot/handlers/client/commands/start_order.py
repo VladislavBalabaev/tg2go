@@ -5,7 +5,7 @@ from aiogram.filters.command import Command
 from aiogram.filters.state import StateFilter
 
 from tg2go.bot.handlers.client.menus.panel import PanelMenu
-from tg2go.bot.lib.message.filters import HasOrderFilter, VerifiedFilter
+from tg2go.bot.lib.message.filter import HasOrderFilter, VerifiedFilter
 from tg2go.bot.lib.message.io import SendMessage
 from tg2go.services.client.order import ClientOrderService, CreateNewOrder
 
