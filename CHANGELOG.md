@@ -26,6 +26,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.1.0] - 2025-06-25 - Vlad
+
+### Added
+
+- Staff menu message is singlton among staff and within staff member chat
+
 ## [0.1.0] - 2025-06-24 - Vlad
 
 ### Added

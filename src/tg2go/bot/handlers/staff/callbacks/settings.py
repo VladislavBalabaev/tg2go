@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 
 from tg2go.bot.handlers.staff.callbacks.category_action.add import AddCategoryStates
 from tg2go.bot.handlers.staff.menus.category import CategoryMenu
-from tg2go.bot.handlers.staff.menus.common import ChangeToNewMenu
+from tg2go.bot.handlers.staff.menus.common import menu
 from tg2go.bot.handlers.staff.menus.panel import PanelMenu
 from tg2go.bot.handlers.staff.menus.settings import (
     SettingsAction,
@@ -44,7 +44,7 @@ async def SettingsCategory(
     callback_query: types.CallbackQuery,
     callback_data: SettingsCategoryCallbackData,
 ) -> None:
-    await ChangeToNewMenu(
+    await menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await CategoryMenu(callback_data.category_id),
     )
@@ -53,7 +53,7 @@ async def SettingsCategory(
 
 @router.callback_query(SettingsCallbackData.filter(F.action == SettingsAction.Back))
 async def SettingsBack(callback_query: types.CallbackQuery) -> None:
-    await ChangeToNewMenu(
+    await menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=PanelMenu(),
     )

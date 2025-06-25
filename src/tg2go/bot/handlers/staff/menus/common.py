@@ -8,7 +8,7 @@ from aiogram.exceptions import TelegramBadRequest, TelegramNetworkError
 
 from tg2go.bot.lib.chat.username import GetChatUserLoggingPart
 from tg2go.bot.lib.message.image import Image
-from tg2go.bot.lib.message.io import ContextIO, SendImage, SignIO
+from tg2go.bot.lib.message.io import ContextIO, DeleteMessage, SendImage, SignIO
 from tg2go.db.models.category import Category
 from tg2go.db.models.good import Good
 
@@ -68,52 +68,93 @@ def SplitButtonsInTwoColumns(
     return new_buttons
 
 
-async def SendMenu(chat_id: int, menu: Menu) -> types.Message | None:
-    # TODO: make a singleton staff image among chat ids
-
-    return await SendImage(
-        chat_id=chat_id,
-        image_dir=menu.image_dir,
-        caption=menu.caption,
-        reply_markup=menu.reply_markup,
-    )
+@dataclass
+class StaffMessage:
+    chat_id: int
+    message_id: int
 
 
-async def ChangeToNewMenu(
-    callback_query: types.CallbackQuery,
-    new_menu: Menu,
-) -> None:
-    assert isinstance(callback_query.message, types.Message)
+class StaffMenu:
+    def __init__(self) -> None:
+        self.message: StaffMessage | None = None
 
-    image = Image(new_menu.image_dir)
+    async def TryDeleteMenuMessage(self) -> None:
+        if self.message is None:
+            return
 
-    media = types.InputMediaPhoto(
-        media=image.GetFileId(),
-        caption=new_menu.caption,
-        parse_mode="HTML",
-    )
-
-    try:
-        await callback_query.message.edit_media(
-            media=media,
-            reply_markup=new_menu.reply_markup,
-        )
-    except (TelegramNetworkError, TelegramBadRequest) as e:
-        logging.error(e)
-        logging.info(f"file_id={image.GetFileId()} is expired. Sending raw image.")
-
-        media.media = image.GetSource()
-
-        message = await callback_query.message.edit_media(
-            media=media,
-            reply_markup=new_menu.reply_markup,
+        await DeleteMessage(
+            chat_id=self.message.chat_id,
+            message_id=self.message.message_id,
         )
 
-        assert isinstance(message, types.Message)
-        assert isinstance(message.photo, list)
-        image.UpdateFileId(message.photo[-1].file_id)
+        self.message = None
 
-    part = await GetChatUserLoggingPart(callback_query.message.chat.id)
-    logging.info(
-        f"{part} {SignIO.Out.value}{ContextIO.Doc.value} {repr(media.caption)}"
-    )
+    async def StoreMenuMessage(self, message: types.Message) -> None:
+        self.message = StaffMessage(
+            chat_id=message.chat.id,
+            message_id=message.message_id,
+        )
+
+    async def SendMenu(self, chat_id: int, menu: Menu) -> types.Message | None:
+        await self.TryDeleteMenuMessage()
+
+        message = await SendImage(
+            chat_id=chat_id,
+            image_dir=menu.image_dir,
+            caption=menu.caption,
+            reply_markup=menu.reply_markup,
+        )
+
+        if message:
+            await self.StoreMenuMessage(message)
+
+        return message
+
+    async def ChangeToNewMenu(
+        self,
+        callback_query: types.CallbackQuery,
+        new_menu: Menu,
+    ) -> None:
+        msg = callback_query.message
+        assert isinstance(msg, types.Message)
+
+        if self.message and msg.message_id != self.message.message_id:
+            await self.TryDeleteMenuMessage()
+
+        if self.message is None:
+            await self.StoreMenuMessage(msg)
+
+        image = Image(new_menu.image_dir)
+        media = types.InputMediaPhoto(
+            media=image.GetFileId(),
+            caption=new_menu.caption,
+            parse_mode="HTML",
+        )
+
+        try:
+            await msg.edit_media(
+                media=media,
+                reply_markup=new_menu.reply_markup,
+            )
+        except (TelegramNetworkError, TelegramBadRequest) as e:
+            logging.info(
+                f"file_id={image.GetFileId()} is expired. Sending raw image. Error: {e}"
+            )
+
+            media.media = image.GetSource()
+
+            updated = await msg.edit_media(
+                media=media,
+                reply_markup=new_menu.reply_markup,
+            )
+
+            if isinstance(updated, types.Message) and updated.photo:
+                image.UpdateFileId(updated.photo[-1].file_id)
+
+        part = await GetChatUserLoggingPart(msg.chat.id)
+        logging.info(
+            f"{part} {SignIO.Out.value}{ContextIO.Doc.value} {repr(media.caption)}"
+        )
+
+
+menu = StaffMenu()

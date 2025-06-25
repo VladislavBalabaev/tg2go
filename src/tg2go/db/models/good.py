@@ -71,9 +71,7 @@ class Good(Base, TimestampMixin):
     )
 
     def GetInfoForClient(self) -> str:
-        # TODO: insert image_url somehow
         return f"{self.name}, {self.price_rub}₽\n\nОписание: {self.description}"
 
     def GetInfoForStaff(self) -> str:
-        # TODO: insert image_url somehow
         return f"- Категория позиции: {self.category.name}\n- Название: {self.name}\n- Цена: {self.price_rub}₽\n- Доступен для покупки: {'Да' if self.valid else 'Нет'}\n- Описание: {self.description}"

@@ -1,7 +1,7 @@
 from aiogram import F, Router, types
 
 from tg2go.bot.handlers.staff.menus.category import CategoryMenu
-from tg2go.bot.handlers.staff.menus.common import ChangeToNewMenu
+from tg2go.bot.handlers.staff.menus.common import menu
 from tg2go.bot.handlers.staff.menus.good import GoodAction, GoodCallbackData
 from tg2go.bot.handlers.staff.menus.good_action.change import GoodChangeMenu
 from tg2go.bot.handlers.staff.menus.good_action.remove import GoodRemoveMenu
@@ -15,7 +15,7 @@ async def GoodChangeGood(
     callback_query: types.CallbackQuery,
     callback_data: GoodCallbackData,
 ) -> None:
-    await ChangeToNewMenu(
+    await menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await GoodChangeMenu(callback_data.good_id),
     )
@@ -27,7 +27,7 @@ async def GoodRemoveGood(
     callback_query: types.CallbackQuery,
     callback_data: GoodCallbackData,
 ) -> None:
-    await ChangeToNewMenu(
+    await menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await GoodRemoveMenu(callback_data.good_id),
     )
@@ -44,7 +44,7 @@ async def GoodBack(
     srv = StaffGoodService.Create()
     good = await srv.GetGood(callback_data.good_id)
 
-    await ChangeToNewMenu(
+    await menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await CategoryMenu(good.category_id),
     )
