@@ -15,7 +15,7 @@ async def CommandCancel(message: types.Message, state: FSMContext) -> None:
     """
     await SendMessage(
         chat_id=message.chat.id,
-        text="Canceled",
+        text="Отменено",
         reply_markup=types.ReplyKeyboardRemove(),
     )
 

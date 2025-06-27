@@ -8,16 +8,16 @@ from tg2go.bot.lib.message.io import SendMessage
 router = Router()
 
 _commands = """/logs
-See logs
+Посмотреть логи
 
 /send
-Send message to a user
+Отправить сообщение пользователю
 
 /senda
-Send messages to all verified users
+Разослать сообщение всем подтверждённым пользователям
 
 /blocking
-State whether user block or not
+Статус блокировки пользователя
 """
 
 
