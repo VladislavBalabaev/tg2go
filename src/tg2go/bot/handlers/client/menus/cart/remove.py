@@ -10,31 +10,33 @@ from tg2go.bot.lib.message.image import GetHeaderDir
 from tg2go.services.client.order import ClientOrderService
 
 
-class CardAction(ClientAction):
-    Pay = "🧾 Оплатить"
-    InHub = "🍽️ В меню"
+class CartRemoveAction(ClientAction):
+    Delete = "🗑️ Точно очистить"
+    Back = "⬅️ Назад"
 
 
-class CardCallbackData(CallbackData, prefix="client.card"):
-    action: CardAction
+class CartRemoveCallbackData(CallbackData, prefix="staff.cat.remove"):
+    action: CartRemoveAction
 
 
-def CreateButton(cb: type[CallbackData], action: ClientAction) -> InlineKeyboardButton:
+def CreateButton(action: ClientAction) -> InlineKeyboardButton:
     return InlineKeyboardButton(
         text=action.value,
-        callback_data=cb(action=action).pack(),
+        callback_data=CartRemoveCallbackData(action=action).pack(),
     )
 
 
-async def CardMenu(chat_id: int) -> ClientMenu:
+async def CartRemoveMenu(chat_id: int) -> ClientMenu:
     order_srv = await ClientOrderService.Create(chat_id)
     order = await order_srv.GetOrder()
 
     text = order.GetClientInfo() + ClientPosition.Cart()
+
     buttons = [
-        [CreateButton(cb=CardCallbackData, action=CardAction.Pay)],
-        [CreateButton(cb=CardCallbackData, action=CardAction.InHub)],
+        [CreateButton(action=CartRemoveAction.Delete)],
+        [CreateButton(action=CartRemoveAction.Back)],
     ]
+
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     return ClientMenu(

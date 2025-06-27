@@ -6,12 +6,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
 from tg2go.bot.handlers.staff.menus.common import menu
-from tg2go.bot.handlers.staff.menus.good import GoodMenu
-from tg2go.bot.handlers.staff.menus.good_action.change import (
+from tg2go.bot.handlers.staff.menus.good.change import (
     GoodChangeAction,
     GoodChangeCallbackData,
     GoodChangeMenu,
 )
+from tg2go.bot.handlers.staff.menus.good.good import GoodMenu
 from tg2go.bot.lib.message.image import GetGoodImageDir, Image
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
 from tg2go.db.models.good import Good

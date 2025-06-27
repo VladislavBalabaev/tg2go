@@ -1,7 +1,7 @@
 from aiogram import F, Router, types
 
-from tg2go.bot.handlers.staff.menus.category import CategoryMenu
-from tg2go.bot.handlers.staff.menus.category_action.remove import (
+from tg2go.bot.handlers.staff.menus.category.category import CategoryMenu
+from tg2go.bot.handlers.staff.menus.category.remove import (
     CategoryRemoveAction,
     CategoryRemoveCallbackData,
 )

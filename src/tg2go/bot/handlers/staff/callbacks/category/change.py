@@ -3,8 +3,8 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-from tg2go.bot.handlers.staff.menus.category import CategoryMenu
-from tg2go.bot.handlers.staff.menus.category_action.change import (
+from tg2go.bot.handlers.staff.menus.category.category import CategoryMenu
+from tg2go.bot.handlers.staff.menus.category.change import (
     CategoryChangeAction,
     CategoryChangeCallbackData,
     CategoryChangeMenu,

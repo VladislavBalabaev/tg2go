@@ -1,4 +1,5 @@
 import logging
+from decimal import Decimal
 from typing import TypeVar, overload
 
 from sqlalchemy import select, update
@@ -117,7 +118,11 @@ class OrderRepository:
             )
 
     # --- Order-Good Logic ---
-    async def AddGoodInOrder(self, order_id: OrderId, good_id: GoodId) -> OrderItemId:
+    async def AddGoodInOrder(
+        self,
+        order_id: OrderId,
+        good_id: GoodId,
+    ) -> OrderItemId:
         async with self.session() as session:
             order = await session.get(Order, order_id)
             good = await session.get(Good, good_id)
@@ -149,7 +154,9 @@ class OrderRepository:
         return item.order_item_id
 
     async def ReduceGoodInOrder(
-        self, order_id: OrderId, good_id: GoodId
+        self,
+        order_id: OrderId,
+        good_id: GoodId,
     ) -> OrderItemId:
         async with self.session() as session:
             order = await session.get(Order, order_id)
@@ -179,6 +186,23 @@ class OrderRepository:
                 raise ValueError(f"Total price RUB is negative for {order}")
 
             logging.info(f"After removing {good} order is {order}")
+
+            await session.commit()
+
+        return item.order_item_id
+
+    async def RemoveAllItemsFromOrder(self, order_id: OrderId) -> OrderItemId:
+        async with self.session() as session:
+            order = await session.get(Order, order_id)
+
+            if order is None:
+                raise ValueError(f"No such Order(order_id={order_id}).")
+
+            for item in order.order_items:
+                logging.info(f"Remove {item} from {order}")
+                await session.delete(item)
+
+            order.total_price_rub = Decimal("0.0")
 
             await session.commit()
 

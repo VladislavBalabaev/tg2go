@@ -1,16 +1,16 @@
 from aiogram import F, Router, types
 from aiogram.fsm.context import FSMContext
 
-from tg2go.bot.handlers.staff.callbacks.good_action.add import AddGoodStates
-from tg2go.bot.handlers.staff.menus.category import (
+from tg2go.bot.handlers.staff.callbacks.good.add import AddGoodStates
+from tg2go.bot.handlers.staff.menus.category.category import (
     CategoryAction,
     CategoryCallbackData,
     CategoryGoodCallbackData,
 )
-from tg2go.bot.handlers.staff.menus.category_action.change import CategoryChangeMenu
-from tg2go.bot.handlers.staff.menus.category_action.remove import CategoryRemoveMenu
+from tg2go.bot.handlers.staff.menus.category.change import CategoryChangeMenu
+from tg2go.bot.handlers.staff.menus.category.remove import CategoryRemoveMenu
 from tg2go.bot.handlers.staff.menus.common import menu
-from tg2go.bot.handlers.staff.menus.good import GoodMenu
+from tg2go.bot.handlers.staff.menus.good.good import GoodMenu
 from tg2go.bot.handlers.staff.menus.settings import SettingsMenu
 from tg2go.bot.lib.message.io import SendMessage
 

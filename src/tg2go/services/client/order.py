@@ -89,6 +89,9 @@ class ClientOrderService:
             good_id=good_id,
         )
 
+    async def ClearOrder(self) -> None:
+        await self._order.RemoveAllItemsFromOrder(self.order_id)
+
     async def FinishOrdering(self) -> None:
         # TODO
         ...
@@ -100,7 +103,8 @@ class ClientOrderService:
         user_repo = UserRepository(AsyncSessionLocal)
 
         order_id = await user_repo.GetUser(
-            chat_id=chat_id, column=User.current_order_id
+            chat_id=chat_id,
+            column=User.current_order_id,
         )
 
         if order_id is None:

@@ -1,6 +1,6 @@
 from aiogram import F, Router, types
 
-from tg2go.bot.handlers.client.menus.card import CardMenu
+from tg2go.bot.handlers.client.menus.cart.cart import CartMenu
 from tg2go.bot.handlers.client.menus.category import CategoryMenu
 from tg2go.bot.handlers.client.menus.common import ChangeToNewClientMenu
 from tg2go.bot.handlers.client.menus.good import GoodMenu
@@ -10,11 +10,11 @@ from tg2go.services.client.order import ClientOrderService
 router = Router()
 
 
-@router.callback_query(ItemCallbackData.filter(F.action == ItemAction.Card))
+@router.callback_query(ItemCallbackData.filter(F.action == ItemAction.Cart))
 async def ItemCard(callback_query: types.CallbackQuery) -> None:
     assert isinstance(callback_query.message, types.Message)
 
-    new_menu = await CardMenu(callback_query.message.chat.id)
+    new_menu = await CartMenu(callback_query.message.chat.id)
 
     await ChangeToNewClientMenu(
         callback_query=callback_query,

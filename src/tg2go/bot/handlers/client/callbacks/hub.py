@@ -1,6 +1,6 @@
 from aiogram import F, Router, types
 
-from tg2go.bot.handlers.client.menus.card import CardMenu
+from tg2go.bot.handlers.client.menus.cart.cart import CartMenu
 from tg2go.bot.handlers.client.menus.category import CategoryMenu
 from tg2go.bot.handlers.client.menus.common import ChangeToNewClientMenu
 from tg2go.bot.handlers.client.menus.hub import (
@@ -13,9 +13,9 @@ from tg2go.bot.handlers.client.menus.panel import PanelMenu
 router = Router()
 
 
-@router.callback_query(HubCallbackData.filter(F.action == HubAction.Card))
+@router.callback_query(HubCallbackData.filter(F.action == HubAction.Cart))
 async def HubCard(callback_query: types.CallbackQuery) -> None:
-    new_menu = await CardMenu(callback_query.from_user.id)
+    new_menu = await CartMenu(callback_query.from_user.id)
 
     await ChangeToNewClientMenu(
         callback_query=callback_query,

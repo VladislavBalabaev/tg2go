@@ -5,7 +5,7 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-from tg2go.bot.handlers.staff.menus.category import CategoryMenu
+from tg2go.bot.handlers.staff.menus.category.category import CategoryMenu
 from tg2go.bot.handlers.staff.menus.common import menu
 from tg2go.bot.lib.message.image import GetGoodImageDir, Image
 from tg2go.bot.lib.message.io import ContextIO, SendMessage

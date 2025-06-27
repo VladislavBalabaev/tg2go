@@ -12,7 +12,7 @@ from tg2go.services.client.good import ClientGoodService
 
 
 class GoodAction(ClientAction):
-    Card = "🛒 Корзина"
+    Cart = "🛒 Корзина"
     AddGood = "➕ Добавить в корзину"
     Back = "⬅️ Назад"
 
@@ -38,7 +38,7 @@ async def GoodMenu(good_id: GoodId) -> ClientMenu:
 
     text = good.GetClientInfo() + ClientPosition.Good(good)
     buttons = [
-        [CreateButton(action=GoodAction.Card, good_id=good_id)],
+        [CreateButton(action=GoodAction.Cart, good_id=good_id)],
         [CreateButton(action=GoodAction.AddGood, good_id=good_id)],
         [CreateButton(action=GoodAction.Back, good_id=good_id)],
     ]

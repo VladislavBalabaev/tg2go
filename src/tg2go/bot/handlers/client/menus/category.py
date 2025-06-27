@@ -5,6 +5,7 @@ from tg2go.bot.handlers.client.menus.common import (
     ClientAction,
     ClientMenu,
     ClientPosition,
+    SplitButtonsInTwoColumns,
 )
 from tg2go.bot.lib.message.image import GetHeaderDir
 from tg2go.db.models.common.types import CategoryId, GoodId
@@ -14,7 +15,7 @@ from tg2go.services.client.order import ClientOrderService
 
 
 class CategoryAction(ClientAction):
-    Card = "🛒 Корзина"
+    Cart = "🛒 Корзина"
     Back = "⬅️ Назад"
 
 
@@ -44,27 +45,17 @@ async def CategoryMenu(chat_id: int, category_id: CategoryId) -> ClientMenu:
     good_srv = ClientGoodService.Create()
     goods = await good_srv.GetAvailableGoods(category_id)
 
-    buttons = []
-
-    group = []
-    for i, good in enumerate(goods):
-        group.append(
-            InlineKeyboardButton(
-                text=good.name,
-                callback_data=CategoryGoodCallbackData(good_id=good.good_id).pack(),
-            )
+    plain_buttons = [
+        InlineKeyboardButton(
+            text=good.name,
+            callback_data=CategoryGoodCallbackData(good_id=good.good_id).pack(),
         )
-
-        if i % 2 == 1:
-            buttons.append(group)
-            group = []
-
-    if group:
-        buttons.append(group)
+        for good in goods
+    ]
 
     buttons = [
-        [CreateButton(cb=CategoryCallbackData, action=CategoryAction.Card)],
-        *buttons,
+        [CreateButton(cb=CategoryCallbackData, action=CategoryAction.Cart)],
+        *SplitButtonsInTwoColumns(plain_buttons),
         [CreateButton(cb=CategoryCallbackData, action=CategoryAction.Back)],
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)

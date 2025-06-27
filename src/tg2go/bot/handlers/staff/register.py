@@ -1,14 +1,16 @@
 from aiogram import Dispatcher
 
-from tg2go.bot.handlers.staff.callbacks import category, good, panel, settings
-from tg2go.bot.handlers.staff.callbacks.category_action import (
+from tg2go.bot.handlers.staff.callbacks import panel, settings
+from tg2go.bot.handlers.staff.callbacks.category import (
     add as cat_add,
+    category,
     change as cat_change,
     remove as cat_remove,
 )
-from tg2go.bot.handlers.staff.callbacks.good_action import (
+from tg2go.bot.handlers.staff.callbacks.good import (
     add as good_add,
     change as good_change,
+    good,
     remove as good_remove,
 )
 from tg2go.bot.handlers.staff.commands import staff

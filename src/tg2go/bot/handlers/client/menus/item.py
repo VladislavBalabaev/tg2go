@@ -12,7 +12,7 @@ from tg2go.services.client.order import ClientOrderService
 
 
 class ItemAction(ClientAction):
-    Card = "🛒 Корзина"
+    Cart = "🛒 Корзина"
     Add = "➕ Добавить"
     Reduce = "➖ Убрать"
     Back = "⬅️ Назад"
@@ -43,7 +43,7 @@ async def ItemMenu(chat_id: int, order_item_id: OrderItemId) -> ClientMenu:
     buttons = [
         [
             CreateButton(
-                action=ItemAction.Card,
+                action=ItemAction.Cart,
                 order_item_id=order_item_id,
             )
         ],

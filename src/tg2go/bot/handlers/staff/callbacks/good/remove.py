@@ -1,9 +1,9 @@
 from aiogram import F, Router, types
 
-from tg2go.bot.handlers.staff.menus.category import CategoryMenu
+from tg2go.bot.handlers.staff.menus.category.category import CategoryMenu
 from tg2go.bot.handlers.staff.menus.common import menu
-from tg2go.bot.handlers.staff.menus.good import GoodMenu
-from tg2go.bot.handlers.staff.menus.good_action.remove import (
+from tg2go.bot.handlers.staff.menus.good.good import GoodMenu
+from tg2go.bot.handlers.staff.menus.good.remove import (
     GoodRemoveAction,
     GoodRemoveCallbackData,
 )

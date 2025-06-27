@@ -25,11 +25,20 @@ def CreateButton(cb: type[CallbackData], action: ClientAction) -> InlineKeyboard
 
 
 def PanelMenu() -> ClientMenu:
+    address_url = (
+        "https://yandex.ru/maps/org/shaurma/240778331973/?ll=37.396586%2C55.722892&z=17"
+    )
+
     # TODO
-    text = "..."
+    text = ""
     buttons = [
         [CreateButton(cb=PanelCallbackData, action=PanelAction.Menu)],
-        [CreateButton(cb=PanelCallbackData, action=PanelAction.Address)],
+        [
+            InlineKeyboardButton(
+                text=PanelAction.Address.value,
+                url=address_url,
+            )
+        ],
         [CreateButton(cb=PanelCallbackData, action=PanelAction.About)],
         [CreateButton(cb=PanelCallbackData, action=PanelAction.AboutService)],
     ]

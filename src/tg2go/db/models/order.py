@@ -69,12 +69,10 @@ class Order(Base, TimestampMixin):
     history: Mapped[list[OrderHistory]] = relationship(
         "OrderHistory",
         back_populates="order",
-        cascade="all, delete-orphan",
     )
 
     def GetClientInfo(self) -> str:
-        # TODO: refactor
-        info = "Шаурма #1 / Сокольники\n📍Москва, Сокольническая площадь, 9\n\n"
+        info = "Шаурма / Сетунь\n📍Москва, ул. Толбухина, 13А, корп. 3\n\n"
 
         if not self.order_items:
             info += "Ваш заказ пока что пуст."

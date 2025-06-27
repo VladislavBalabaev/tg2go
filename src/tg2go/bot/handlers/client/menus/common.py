@@ -59,6 +59,10 @@ class ClientPosition:
     def Cart(cls) -> str:
         return cls._Path(cls.Label.Cart.value)
 
+    @classmethod
+    def CartItem(cls, item: OrderItem) -> str:
+        return cls._Path(cls.Label.Cart.value, item.good.name)
+
 
 def SplitButtonsInTwoColumns(
     plain_buttons: list[types.InlineKeyboardButton],

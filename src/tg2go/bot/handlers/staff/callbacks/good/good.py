@@ -1,10 +1,10 @@
 from aiogram import F, Router, types
 
-from tg2go.bot.handlers.staff.menus.category import CategoryMenu
+from tg2go.bot.handlers.staff.menus.category.category import CategoryMenu
 from tg2go.bot.handlers.staff.menus.common import menu
-from tg2go.bot.handlers.staff.menus.good import GoodAction, GoodCallbackData
-from tg2go.bot.handlers.staff.menus.good_action.change import GoodChangeMenu
-from tg2go.bot.handlers.staff.menus.good_action.remove import GoodRemoveMenu
+from tg2go.bot.handlers.staff.menus.good.change import GoodChangeMenu
+from tg2go.bot.handlers.staff.menus.good.good import GoodAction, GoodCallbackData
+from tg2go.bot.handlers.staff.menus.good.remove import GoodRemoveMenu
 from tg2go.services.staff.good import StaffGoodService
 
 router = Router()

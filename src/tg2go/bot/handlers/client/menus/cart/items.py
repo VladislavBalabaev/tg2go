@@ -8,22 +8,20 @@ from tg2go.bot.handlers.client.menus.common import (
     SplitButtonsInTwoColumns,
 )
 from tg2go.bot.lib.message.image import GetHeaderDir
-from tg2go.db.models.common.types import CategoryId
-from tg2go.services.client.category import ClientCategoryService
+from tg2go.db.models.common.types import OrderItemId
 from tg2go.services.client.order import ClientOrderService
 
 
-class HubAction(ClientAction):
-    Cart = "🛒 Корзина"
+class CartItemsAction(ClientAction):
     Back = "⬅️ Назад"
 
 
-class HubCallbackData(CallbackData, prefix="client.hub"):
-    action: HubAction
+class CartItemsCallbackData(CallbackData, prefix="client.items"):
+    action: CartItemsAction
 
 
-class HubCategoryCallbackData(CallbackData, prefix="client.hub.cat"):
-    category_id: CategoryId
+class CartItemsItemCallbackData(CallbackData, prefix="client.items.item"):
+    order_item_id: OrderItemId
 
 
 def CreateButton(cb: type[CallbackData], action: ClientAction) -> InlineKeyboardButton:
@@ -33,26 +31,25 @@ def CreateButton(cb: type[CallbackData], action: ClientAction) -> InlineKeyboard
     )
 
 
-async def HubMenu(chat_id: int) -> ClientMenu:
+async def CartItemsMenu(chat_id: int) -> ClientMenu:
     order_srv = await ClientOrderService.Create(chat_id)
     order = await order_srv.GetOrder()
 
-    cat_srv = ClientCategoryService.Create()
-    categories = await cat_srv.GetSortedCategories()
+    text = order.GetClientInfo() + ClientPosition.Cart()
 
     plain_buttons = [
         InlineKeyboardButton(
-            text=cat.name,
-            callback_data=HubCategoryCallbackData(category_id=cat.category_id).pack(),
+            text=item.good.name,
+            callback_data=CartItemsItemCallbackData(
+                order_item_id=item.order_item_id
+            ).pack(),
         )
-        for cat in categories
+        for item in order.order_items
     ]
 
-    text = order.GetClientInfo() + ClientPosition.Hub()
     buttons = [
-        [CreateButton(cb=HubCallbackData, action=HubAction.Cart)],
         *SplitButtonsInTwoColumns(plain_buttons),
-        [CreateButton(cb=HubCallbackData, action=HubAction.Back)],
+        [CreateButton(cb=CartItemsCallbackData, action=CartItemsAction.Back)],
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
