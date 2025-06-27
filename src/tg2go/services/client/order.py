@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from decimal import Decimal
 from typing import TypeVar
 
 from tg2go.bot.lib.message.io import DeleteMessage
@@ -46,7 +45,7 @@ class ClientOrderService:
         self._order = order_repo
         self._user = user_repo
 
-    async def _GetOrder(self) -> Order:
+    async def GetOrder(self) -> Order:
         order = await self._order.GetOrder(self.order_id)
 
         if order is None:
@@ -54,8 +53,19 @@ class ClientOrderService:
 
         return order
 
+    async def GetOrderItem(self, order_item_id: OrderItemId) -> OrderItem:
+        order = await self.GetOrder()
+
+        for item in order.order_items:
+            if order_item_id == item.order_item_id:
+                return item
+
+        raise ValueError(
+            f"Order(order_id={self.order_id}) doesn't have OrderItem(order_item_id={order_item_id})."
+        )
+
     async def DeleteOrderMessage(self) -> None:
-        order = await self._GetOrder()
+        order = await self.GetOrder()
 
         if order.order_message_id is not None:
             await DeleteMessage(
@@ -69,43 +79,6 @@ class ClientOrderService:
             column=Order.order_message_id,
             value=message_id,
         )
-
-    async def GetOrderItem(self, order_item_id: OrderItemId) -> OrderItem:
-        order = await self._order.GetOrder(self.order_id)
-
-        if order is None:
-            raise ValueError(f"Order(order_id={self.order_id}) doesn't exist.")
-
-        for item in order.order_items:
-            if order_item_id == item.order_item_id:
-                return item
-
-        raise ValueError(
-            f"Order(order_id={self.order_id}) doesn't have OrderItem(order_item_id={order_item_id})."
-        )
-
-    async def GetOrderInfo(self) -> str:
-        # TODO
-        order = await self._GetOrder()
-
-        info = "Шаурма #1 / Сокольники\n📍Москва, Сокольническая площадь, 9\n\n"
-
-        if not order.order_items:
-            info += "Ваш заказ пока что пуст."
-            return info
-
-        info += "Заказ:\n"
-
-        for i, item in enumerate(order.order_items, 1):
-            name: str = item.good.name
-            qty: int = item.quantity
-            price: Decimal = item.unit_price_rub
-
-            info += f"{i}. {name}, {qty} шт. × {price}₽ = {price * qty}₽\n"
-
-        info += f"\nИтого: {order.total_price_rub}₽"
-
-        return info
 
     async def AddGoodInOrder(self, good_id: GoodId) -> OrderItemId:
         return await self._order.AddGoodInOrder(order_id=self.order_id, good_id=good_id)

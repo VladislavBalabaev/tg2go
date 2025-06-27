@@ -2,9 +2,9 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from tg2go.bot.handlers.staff.menus.common import (
-    Menu,
     SplitButtonsInTwoColumns,
     StaffAction,
+    StaffMenu,
     StaffPosition,
 )
 from tg2go.bot.lib.message.image import GetHeaderDir
@@ -32,7 +32,7 @@ def CreateButton(cb: type[CallbackData], action: StaffAction) -> InlineKeyboardB
     )
 
 
-async def SettingsMenu() -> Menu:
+async def SettingsMenu() -> StaffMenu:
     srv = StaffCategoryService.Create()
     categories = await srv.GetSortedCategories()
 
@@ -55,7 +55,7 @@ async def SettingsMenu() -> Menu:
 
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-    return Menu(
+    return StaffMenu(
         image_dir=GetHeaderDir(),
         caption=text,
         reply_markup=markup,

@@ -36,7 +36,7 @@ class Image:
         return types.FSInputFile(self.source)
 
     def UpdateFileId(self, file_id: str) -> None:
-        logging.info(f"Updating file_id={file_id}.")
+        logging.info(f"Updating file_id={file_id} at {self.file_id}.")
 
         self.file_id.write_text(file_id, encoding="utf-8")
 
@@ -47,4 +47,4 @@ class Image:
         await bot.download_file(file.file_path, destination=self.source)
         self.UpdateFileId(photo.file_id)
 
-        logging.info(f"Photo file_id={photo.file_id} is downloaded.")
+        logging.info(f"Photo file_id={photo.file_id} is downloaded to {self.source}.")

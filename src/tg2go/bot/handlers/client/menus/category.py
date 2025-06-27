@@ -3,10 +3,10 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from tg2go.bot.handlers.client.menus.common import (
     ClientAction,
+    ClientMenu,
     ClientPosition,
-    CreateButton,
-    Menu,
 )
+from tg2go.bot.lib.message.image import GetHeaderDir
 from tg2go.db.models.common.types import CategoryId, GoodId
 from tg2go.services.client.category import ClientCategoryService
 from tg2go.services.client.good import ClientGoodService
@@ -26,10 +26,20 @@ class CategoryGoodCallbackData(CallbackData, prefix="client.cat.good"):
     good_id: GoodId
 
 
-async def CategoryMenu(chat_id: int, category_id: CategoryId) -> Menu:
+def CreateButton(cb: type[CallbackData], action: ClientAction) -> InlineKeyboardButton:
+    return InlineKeyboardButton(
+        text=action.value,
+        callback_data=cb(action=action).pack(),
+    )
+
+
+async def CategoryMenu(chat_id: int, category_id: CategoryId) -> ClientMenu:
     order_srv = await ClientOrderService.Create(chat_id)
+    order = await order_srv.GetOrder()
     cat_srv = ClientCategoryService.Create()
     category = await cat_srv.GetCategory(category_id)
+
+    text = order.GetClientInfo() + ClientPosition.Category(category)
 
     good_srv = ClientGoodService.Create()
     goods = await good_srv.GetAvailableGoods(category_id)
@@ -52,7 +62,6 @@ async def CategoryMenu(chat_id: int, category_id: CategoryId) -> Menu:
     if group:
         buttons.append(group)
 
-    text = await order_srv.GetOrderInfo() + ClientPosition.Category(category)
     buttons = [
         [CreateButton(cb=CategoryCallbackData, action=CategoryAction.Card)],
         *buttons,
@@ -60,7 +69,8 @@ async def CategoryMenu(chat_id: int, category_id: CategoryId) -> Menu:
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-    return Menu(
-        text=text,
+    return ClientMenu(
+        image_dir=GetHeaderDir(),
+        caption=text,
         reply_markup=markup,
     )

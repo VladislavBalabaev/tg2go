@@ -18,7 +18,7 @@ class StaffAction(str, Enum):
 
 
 @dataclass
-class Menu:
+class StaffMenu:
     image_dir: Path
     caption: str
     reply_markup: types.InlineKeyboardMarkup | None
@@ -74,7 +74,7 @@ class StaffMessage:
     message_id: int
 
 
-class StaffMenu:
+class StaffMenuSingleton:
     def __init__(self) -> None:
         self.message: StaffMessage | None = None
 
@@ -95,7 +95,7 @@ class StaffMenu:
             message_id=message.message_id,
         )
 
-    async def SendMenu(self, chat_id: int, menu: Menu) -> types.Message | None:
+    async def SendMenu(self, chat_id: int, menu: StaffMenu) -> types.Message | None:
         await self.TryDeleteMenuMessage()
 
         message = await SendImage(
@@ -105,15 +105,18 @@ class StaffMenu:
             reply_markup=menu.reply_markup,
         )
 
-        if message:
-            await self.StoreMenuMessage(message)
+        if not message:
+            logging.error(f"Can't send menu to chat_id={chat_id}")
+            return None
+
+        await self.StoreMenuMessage(message)
 
         return message
 
     async def ChangeToNewMenu(
         self,
         callback_query: types.CallbackQuery,
-        new_menu: Menu,
+        new_menu: StaffMenu,
     ) -> None:
         msg = callback_query.message
         assert isinstance(msg, types.Message)
@@ -157,4 +160,4 @@ class StaffMenu:
         )
 
 
-menu = StaffMenu()
+menu = StaffMenuSingleton()

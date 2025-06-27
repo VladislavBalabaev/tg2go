@@ -55,8 +55,8 @@ class OrderItem(Base, TimestampMixin):
         lazy="selectin",
     )
 
-    def GetInfoForClient(self) -> str:
-        text = self.good.GetInfoForClient()
+    def GetClientInfo(self) -> str:
+        text = self.good.GetClientInfo()
         text += f"\n\n📋Позиция в заказе:\n{self.unit_price_rub}₽ × {self.quantity}шт. = {self.unit_price_rub * self.quantity}₽"
 
         return text

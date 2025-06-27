@@ -1,7 +1,7 @@
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from tg2go.bot.handlers.staff.menus.common import Menu, StaffAction, StaffPosition
+from tg2go.bot.handlers.staff.menus.common import StaffAction, StaffMenu, StaffPosition
 from tg2go.bot.lib.message.image import GetGoodImageDir
 from tg2go.db.models.common.types import GoodId
 from tg2go.services.staff.good import StaffGoodService
@@ -27,11 +27,11 @@ def CreateButton(action: StaffAction, good_id: GoodId) -> InlineKeyboardButton:
     )
 
 
-async def GoodRemoveMenu(good_id: GoodId) -> Menu:
+async def GoodRemoveMenu(good_id: GoodId) -> StaffMenu:
     good_srv = StaffGoodService.Create()
     good = await good_srv.GetGood(good_id)
 
-    text = f"🔴 Бот не работает\n\nО позиции:\n{good.GetInfoForStaff()}{StaffPosition.Good(good)}"
+    text = f"🔴 Бот не работает\n\nО позиции:\n{good.GetStaffInfo()}{StaffPosition.Good(good)}"
 
     buttons = [
         [
@@ -49,7 +49,7 @@ async def GoodRemoveMenu(good_id: GoodId) -> Menu:
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-    return Menu(
+    return StaffMenu(
         image_dir=GetGoodImageDir(good.good_id),
         caption=text,
         reply_markup=markup,

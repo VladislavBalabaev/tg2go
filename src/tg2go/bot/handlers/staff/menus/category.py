@@ -2,9 +2,9 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from tg2go.bot.handlers.staff.menus.common import (
-    Menu,
     SplitButtonsInTwoColumns,
     StaffAction,
+    StaffMenu,
     StaffPosition,
 )
 from tg2go.bot.lib.message.image import GetHeaderDir
@@ -39,7 +39,7 @@ def CreateButton(action: StaffAction, category_id: CategoryId) -> InlineKeyboard
     )
 
 
-async def CategoryMenu(category_id: CategoryId) -> Menu:
+async def CategoryMenu(category_id: CategoryId) -> StaffMenu:
     cat_srv = StaffCategoryService.Create()
     category = await cat_srv.GetCategory(category_id)
 
@@ -57,7 +57,7 @@ async def CategoryMenu(category_id: CategoryId) -> Menu:
         for good in goods
     ]
 
-    text = f"🔴 Бот не работает\n\nО категории:\n{category.GetInfoForStaff()}{StaffPosition.Category(category)}"
+    text = f"🔴 Бот не работает\n\nО категории:\n{category.GetStaffInfo()}{StaffPosition.Category(category)}"
     buttons = [
         [
             CreateButton(action=CategoryAction.ChangeCategory, category_id=category_id),
@@ -70,7 +70,7 @@ async def CategoryMenu(category_id: CategoryId) -> Menu:
 
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-    return Menu(
+    return StaffMenu(
         image_dir=GetHeaderDir(),
         caption=text,
         reply_markup=markup,

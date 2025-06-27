@@ -1,7 +1,8 @@
 from aiogram.filters.callback_data import CallbackData
-from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from tg2go.bot.handlers.client.menus.common import ClientAction, CreateButton, Menu
+from tg2go.bot.handlers.client.menus.common import ClientAction, ClientMenu
+from tg2go.bot.lib.message.image import GetHeaderDir
 
 
 class PanelAction(ClientAction):
@@ -16,7 +17,14 @@ class PanelCallbackData(CallbackData, prefix="client.panel"):
     action: PanelAction
 
 
-def PanelMenu() -> Menu:
+def CreateButton(cb: type[CallbackData], action: ClientAction) -> InlineKeyboardButton:
+    return InlineKeyboardButton(
+        text=action.value,
+        callback_data=cb(action=action).pack(),
+    )
+
+
+def PanelMenu() -> ClientMenu:
     # TODO
     text = "..."
     buttons = [
@@ -27,13 +35,19 @@ def PanelMenu() -> Menu:
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-    return Menu(
-        text=text,
+    return ClientMenu(
+        image_dir=GetHeaderDir(),
+        caption=text,
         reply_markup=markup,
     )
 
 
-def BackToPanelReplyMarkup() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        inline_keyboard=[[CreateButton(cb=PanelCallbackData, action=PanelAction.Back)]]
+def PanelMenuExplain(text: str) -> ClientMenu:
+    buttons = [[CreateButton(cb=PanelCallbackData, action=PanelAction.Back)]]
+    markup = InlineKeyboardMarkup(inline_keyboard=buttons)
+
+    return ClientMenu(
+        image_dir=GetHeaderDir(),
+        caption=text,
+        reply_markup=markup,
     )

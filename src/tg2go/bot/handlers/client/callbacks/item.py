@@ -2,6 +2,7 @@ from aiogram import F, Router, types
 
 from tg2go.bot.handlers.client.menus.card import CardMenu
 from tg2go.bot.handlers.client.menus.category import CategoryMenu
+from tg2go.bot.handlers.client.menus.common import ChangeToNewClientMenu
 from tg2go.bot.handlers.client.menus.good import GoodMenu
 from tg2go.bot.handlers.client.menus.item import ItemAction, ItemCallbackData, ItemMenu
 from tg2go.services.client.order import ClientOrderService
@@ -13,11 +14,11 @@ router = Router()
 async def ItemCard(callback_query: types.CallbackQuery) -> None:
     assert isinstance(callback_query.message, types.Message)
 
-    menu = await CardMenu(callback_query.from_user.id)
+    new_menu = await CardMenu(callback_query.message.chat.id)
 
-    await callback_query.message.edit_text(
-        text=menu.text,
-        reply_markup=menu.reply_markup,
+    await ChangeToNewClientMenu(
+        callback_query=callback_query,
+        new_menu=new_menu,
     )
     await callback_query.answer()
 
@@ -29,18 +30,18 @@ async def ItemAdd(
 ) -> None:
     assert isinstance(callback_query.message, types.Message)
 
-    srv = await ClientOrderService.Create(callback_query.from_user.id)
+    srv = await ClientOrderService.Create(callback_query.message.chat.id)
     item = await srv.GetOrderItem(callback_data.order_item_id)
     order_item_id = await srv.AddGoodInOrder(item.good.good_id)
 
-    menu = await ItemMenu(
-        chat_id=callback_query.from_user.id,
+    new_menu = await ItemMenu(
+        chat_id=callback_query.message.chat.id,
         order_item_id=order_item_id,
     )
 
-    await callback_query.message.edit_text(
-        text=menu.text,
-        reply_markup=menu.reply_markup,
+    await ChangeToNewClientMenu(
+        callback_query=callback_query,
+        new_menu=new_menu,
     )
     await callback_query.answer()
 
@@ -52,22 +53,23 @@ async def ItemReduce(
 ) -> None:
     assert isinstance(callback_query.message, types.Message)
 
-    srv = await ClientOrderService.Create(callback_query.from_user.id)
+    srv = await ClientOrderService.Create(callback_query.message.chat.id)
     item = await srv.GetOrderItem(callback_data.order_item_id)  # mb not working
+
     quanitity_before = item.quantity
     order_item_id = await srv.ReduceGoodInOrder(item.good.good_id)
 
     if quanitity_before == 1:
-        menu = await GoodMenu(item.good.good_id)
+        new_menu = await GoodMenu(item.good.good_id)
     else:
-        menu = await ItemMenu(
-            chat_id=callback_query.from_user.id,
+        new_menu = await ItemMenu(
+            chat_id=callback_query.message.chat.id,
             order_item_id=order_item_id,
         )
 
-    await callback_query.message.edit_text(
-        text=menu.text,
-        reply_markup=menu.reply_markup,
+    await ChangeToNewClientMenu(
+        callback_query=callback_query,
+        new_menu=new_menu,
     )
     await callback_query.answer()
 
@@ -79,16 +81,16 @@ async def ItemBack(
 ) -> None:
     assert isinstance(callback_query.message, types.Message)
 
-    srv = await ClientOrderService.Create(callback_query.from_user.id)
+    srv = await ClientOrderService.Create(callback_query.message.chat.id)
     item = await srv.GetOrderItem(callback_data.order_item_id)
 
-    menu = await CategoryMenu(
-        chat_id=callback_query.from_user.id,
+    new_menu = await CategoryMenu(
+        chat_id=callback_query.message.chat.id,
         category_id=item.good.category_id,
     )
 
-    await callback_query.message.edit_text(
-        text=menu.text,
-        reply_markup=menu.reply_markup,
+    await ChangeToNewClientMenu(
+        callback_query=callback_query,
+        new_menu=new_menu,
     )
     await callback_query.answer()

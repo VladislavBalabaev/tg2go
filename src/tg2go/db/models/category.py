@@ -47,5 +47,5 @@ class Category(Base, TimestampMixin):
         lazy="selectin",
     )
 
-    def GetInfoForStaff(self) -> str:
+    def GetStaffInfo(self) -> str:
         return f"- Название: {self.name}\n- Индекс: {self.index}\n- Содержит позиций: {len(self.goods)}\n\nЧем больше индекс, тем дальше категория в списке категорий."

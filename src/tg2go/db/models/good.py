@@ -70,8 +70,8 @@ class Good(Base, TimestampMixin):
         cascade="all, delete-orphan",
     )
 
-    def GetInfoForClient(self) -> str:
+    def GetClientInfo(self) -> str:
         return f"{self.name}, {self.price_rub}₽\n\nОписание: {self.description}"
 
-    def GetInfoForStaff(self) -> str:
+    def GetStaffInfo(self) -> str:
         return f"- Категория позиции: {self.category.name}\n- Название: {self.name}\n- Цена: {self.price_rub}₽\n- Доступен для покупки: {'Да' if self.valid else 'Нет'}\n- Описание: {self.description}"

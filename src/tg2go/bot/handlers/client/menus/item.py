@@ -1,7 +1,12 @@
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from tg2go.bot.handlers.client.menus.common import ClientAction, ClientPosition, Menu
+from tg2go.bot.handlers.client.menus.common import (
+    ClientAction,
+    ClientMenu,
+    ClientPosition,
+)
+from tg2go.bot.lib.message.image import GetGoodImageDir
 from tg2go.db.models.common.types import OrderItemId
 from tg2go.services.client.order import ClientOrderService
 
@@ -30,11 +35,11 @@ def CreateButton(
     )
 
 
-async def ItemMenu(chat_id: int, order_item_id: OrderItemId) -> Menu:
+async def ItemMenu(chat_id: int, order_item_id: OrderItemId) -> ClientMenu:
     srv = await ClientOrderService.Create(chat_id)
     order_item = await srv.GetOrderItem(order_item_id)
 
-    text = order_item.GetInfoForClient() + ClientPosition.Item(order_item)
+    text = order_item.GetClientInfo() + ClientPosition.Item(order_item)
     buttons = [
         [
             CreateButton(
@@ -44,11 +49,11 @@ async def ItemMenu(chat_id: int, order_item_id: OrderItemId) -> Menu:
         ],
         [
             CreateButton(
-                action=ItemAction.Add,
+                action=ItemAction.Reduce,
                 order_item_id=order_item_id,
             ),
             CreateButton(
-                action=ItemAction.Reduce,
+                action=ItemAction.Add,
                 order_item_id=order_item_id,
             ),
         ],
@@ -61,7 +66,8 @@ async def ItemMenu(chat_id: int, order_item_id: OrderItemId) -> Menu:
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-    return Menu(
-        text=text,
+    return ClientMenu(
+        image_dir=GetGoodImageDir(order_item.good_id),
+        caption=text,
         reply_markup=markup,
     )

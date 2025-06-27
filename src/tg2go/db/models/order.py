@@ -72,4 +72,23 @@ class Order(Base, TimestampMixin):
         cascade="all, delete-orphan",
     )
 
-    # TODO: add descriptions
+    def GetClientInfo(self) -> str:
+        # TODO: refactor
+        info = "Шаурма #1 / Сокольники\n📍Москва, Сокольническая площадь, 9\n\n"
+
+        if not self.order_items:
+            info += "Ваш заказ пока что пуст."
+            return info
+
+        info += "Заказ:\n"
+
+        for i, item in enumerate(self.order_items, 1):
+            name: str = item.good.name
+            qty: int = item.quantity
+            price: Decimal = item.unit_price_rub
+
+            info += f"{i}. {name}, {qty} шт. × {price}₽ = {price * qty}₽\n"
+
+        info += f"\nИтого: {self.total_price_rub}₽"
+
+        return info

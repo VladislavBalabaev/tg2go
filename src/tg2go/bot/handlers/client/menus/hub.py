@@ -3,10 +3,10 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from tg2go.bot.handlers.client.menus.common import (
     ClientAction,
+    ClientMenu,
     ClientPosition,
-    CreateButton,
-    Menu,
 )
+from tg2go.bot.lib.message.image import GetHeaderDir
 from tg2go.db.models.common.types import CategoryId
 from tg2go.services.client.category import ClientCategoryService
 from tg2go.services.client.order import ClientOrderService
@@ -25,8 +25,16 @@ class HubCategoryCallbackData(CallbackData, prefix="client.hub.cat"):
     category_id: CategoryId
 
 
-async def HubMenu(chat_id: int) -> Menu:
+def CreateButton(cb: type[CallbackData], action: ClientAction) -> InlineKeyboardButton:
+    return InlineKeyboardButton(
+        text=action.value,
+        callback_data=cb(action=action).pack(),
+    )
+
+
+async def HubMenu(chat_id: int) -> ClientMenu:
     order_srv = await ClientOrderService.Create(chat_id)
+    order = await order_srv.GetOrder()
 
     cat_srv = ClientCategoryService.Create()
     categories = await cat_srv.GetSortedCategories()
@@ -51,7 +59,7 @@ async def HubMenu(chat_id: int) -> Menu:
     if group:
         buttons.append(group)
 
-    text = await order_srv.GetOrderInfo() + ClientPosition.Hub()
+    text = order.GetClientInfo() + ClientPosition.Hub()
     buttons = [
         [CreateButton(cb=HubCallbackData, action=HubAction.Card)],
         *buttons,
@@ -59,7 +67,8 @@ async def HubMenu(chat_id: int) -> Menu:
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
-    return Menu(
-        text=text,
+    return ClientMenu(
+        image_dir=GetHeaderDir(),
+        caption=text,
         reply_markup=markup,
     )
