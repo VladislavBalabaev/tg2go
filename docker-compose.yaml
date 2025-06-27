@@ -17,7 +17,7 @@ services:
     networks:
       - tg2go_network
     ports:
-      - "5432:5432"
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
     volumes:
       - ./data/postgresql/data:/var/lib/postgresql/data
 

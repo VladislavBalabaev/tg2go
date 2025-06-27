@@ -27,8 +27,6 @@ black src/
 ruff check src/ --fix
 
 mypy src/
-
-pytest
 ```
 
 ## Launch Bot
