@@ -24,7 +24,7 @@ async def CommandSend(
     if not command.args or len(command.args.split()) != 1:
         await SendMessage(
             chat_id=message.chat.id,
-            text="Include tg username:\n/send @vbalab",
+            text="Укажите username в Telegram:\n/send @vbalab",
             context=ContextIO.UserFailed,
         )
         return
@@ -35,13 +35,13 @@ async def CommandSend(
     if chat_id is None:
         await SendMessage(
             chat_id=message.chat.id,
-            text="User with such credentials doesn't exist.\nAborting",
+            text="Пользователь с такими данными не существует.\nОтмена",
             context=ContextIO.UserFailed,
         )
         await state.clear()
         return
 
-    await SendMessage(chat_id=message.chat.id, text="Input text of message")
+    await SendMessage(chat_id=message.chat.id, text="Введите текст сообщения")
 
     await state.set_state(SendStates.Message)
     await state.set_data({"chat_id": chat_id})
@@ -56,8 +56,8 @@ async def CommandSendMessage(message: types.Message, state: FSMContext) -> None:
     output = await SendMessage(chat_id=data["chat_id"], text=message.text)
 
     if output:
-        await SendMessage(chat_id=message.chat.id, text="Successful")
+        await SendMessage(chat_id=message.chat.id, text="Успешно")
     else:
-        await SendMessage(chat_id=message.chat.id, text="Unsuccessful")
+        await SendMessage(chat_id=message.chat.id, text="Неудачно")
 
     await state.clear()

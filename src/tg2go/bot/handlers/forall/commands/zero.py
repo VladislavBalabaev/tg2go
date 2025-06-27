@@ -10,7 +10,7 @@ router = Router()
 async def ZeroMessageText(message: types.Message) -> None:
     await SendMessage(
         chat_id=message.chat.id,
-        text="You're not in a command right now.\nPick something from the Menu",
+        text="Сейчас вы не выполняете команду.\nВыберите что-то из меню",
         context=ContextIO.ZeroMessage,
     )
 
@@ -20,8 +20,8 @@ async def NoTextMessage(message: types.Message, state: FSMContext) -> None:
     current_state = await state.get_state()
 
     if current_state is None:
-        text = "The bot only works with text messages.\nPick something from the Menu"
+        text = "Бот работает только с текстовыми сообщениями.\nВыберите что-то из меню"
     else:
-        text = "The bot only works with text messages\nTry again"
+        text = "Бот работает только с текстовыми сообщениями\nПопробуйте снова"
 
     await SendMessage(chat_id=message.chat.id, text=text, context=ContextIO.NoText)

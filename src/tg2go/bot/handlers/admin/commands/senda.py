@@ -17,7 +17,7 @@ class SendaStates(StatesGroup):
 
 @router.message(Command("senda"), StateFilter(None), AdminFilter())
 async def CommandSenda(message: types.Message, state: FSMContext) -> None:
-    await SendMessage(chat_id=message.chat.id, text="Input text of message")
+    await SendMessage(chat_id=message.chat.id, text="Введите текст сообщения")
     await state.set_state(SendaStates.Message)
 
 
@@ -31,5 +31,5 @@ async def CommandSendaMessage(message: types.Message, state: FSMContext) -> None
     messages = [PersonalMsg(chat_id=chat_id, text=message.text) for chat_id in chat_ids]
     await SendMessagesToGroup(messages)
 
-    await SendMessage(chat_id=message.chat.id, text="Done")
+    await SendMessage(chat_id=message.chat.id, text="Готово")
     await state.clear()

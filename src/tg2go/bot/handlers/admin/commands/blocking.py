@@ -15,9 +15,9 @@ router = Router()
 
 
 class BlockingAction(str, Enum):
-    Block = "Block"
-    Unblock = "Unblock"
-    Leave = "Leave as is"
+    Block = "Заблокировать"
+    Unblock = "Разблокировать"
+    Leave = "Оставить как есть"
 
 
 class BlockingCallbackData(CallbackData, prefix="blocking"):
@@ -49,7 +49,7 @@ async def CommandBlocking(
     if not command.args or len(command.args.split()) != 1:
         await SendMessage(
             chat_id=message.chat.id,
-            text="Include tg username:\n/blocking @vbalab",
+            text="Укажите username в Telegram:\n/blocking @vbalab",
             context=ContextIO.UserFailed,
         )
         return
@@ -60,7 +60,7 @@ async def CommandBlocking(
     if chat_id is None:
         await SendMessage(
             chat_id=message.chat.id,
-            text="No such user.",
+            text="Пользователь не найден.",
         )
         return
 
@@ -69,7 +69,7 @@ async def CommandBlocking(
     if blocked:
         await SendMessage(
             chat_id=message.chat.id,
-            text="🔴 User is blocked.\n\nDo you want to unblock?",
+            text="🔴 Пользователь заблокирован.\n\nРазблокировать?",
             reply_markup=BlockingKeyboard(
                 actions=[BlockingAction.Unblock, BlockingAction.Leave],
                 chat_id=chat_id,
@@ -79,7 +79,7 @@ async def CommandBlocking(
 
     await SendMessage(
         chat_id=message.chat.id,
-        text="🟢 User is not blocked.\n\nDo you want to block?",
+        text="🟢 Пользователь не заблокирован.\n\nЗаблокировать?",
         reply_markup=BlockingKeyboard(
             actions=[BlockingAction.Block, BlockingAction.Leave],
             chat_id=chat_id,
@@ -97,7 +97,7 @@ async def CommandBlockingUnblock(
     await UnblockUser(callback_data.chat_id)
 
     await callback_query.message.edit_text(
-        text="🟢 User is not blocked now.",
+        text="🟢 Пользователь теперь не заблокирован.",
         reply_markup=None,
     )
     await callback_query.answer()
@@ -112,7 +112,7 @@ async def CommandBlockingBlock(
     await BlockUser(callback_data.chat_id)
 
     await callback_query.message.edit_text(
-        text="🔴 User is blocked now.",
+        text="🔴 Пользователь теперь заблокирован.",
         reply_markup=None,
     )
     await callback_query.answer()
@@ -123,4 +123,4 @@ async def CommandBlockingCancel(callback_query: types.CallbackQuery) -> None:
     assert isinstance(callback_query.message, types.Message)
 
     await callback_query.message.edit_reply_markup(reply_markup=None)
-    await callback_query.answer("Cancelled")
+    await callback_query.answer("Отменено")

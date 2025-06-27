@@ -11,7 +11,7 @@ async def NotifyOnStartup() -> None:
     logging.info("# Bot started.")
 
     for admin in ADMIN_CHAT_IDS:
-        await SendMessage(chat_id=admin, text="# Bot started.")
+        await SendMessage(chat_id=admin, text="# Бот запущен.")
 
 
 async def NotifyOnShutdown() -> None:
@@ -19,7 +19,7 @@ async def NotifyOnShutdown() -> None:
         await SendDocument(
             chat_id=admin,
             document=types.FSInputFile(PATH_BOT_LOGS),
-            caption="# Bot stopped.",
+            caption="# Бот остановлен.",
         )
 
     logging.info("# Bot stopped.")

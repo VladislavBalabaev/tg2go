@@ -24,7 +24,7 @@ class StartStates(StatesGroup):
 
 @router.message(StateFilter(None), Command("start"))
 async def CommandStart(message: types.Message, state: FSMContext) -> None:
-    button = KeyboardButton(text="📱 Share my contact", request_contact=True)
+    button = KeyboardButton(text="📱 Поделиться контактом", request_contact=True)
     keyboard = ReplyKeyboardMarkup(keyboard=[[button]], resize_keyboard=True)
 
     await SendMessage(

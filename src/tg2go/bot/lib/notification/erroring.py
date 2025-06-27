@@ -54,7 +54,7 @@ async def AiogramExceptionHandler(event: ErrorEvent) -> bool:
 
         await SendMessage(
             chat_id,
-            text="Oops, something went wrong.\nWe've logged the error.\n\nIf the issue isn't resolved soon, feel free to reach out to @vbalab",
+            text="Ой, что-то пошло не так.\nМы записали ошибку.\n\nЕсли проблема не решится вскоре, свяжитесь с @vbalab",
             context=ContextIO.Error,
         )
 
