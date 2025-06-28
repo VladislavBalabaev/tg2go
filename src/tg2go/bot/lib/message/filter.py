@@ -1,7 +1,7 @@
 from aiogram import types
 from aiogram.filters import Filter
 
-from tg2go.core.configs.constants import ADMIN_CHAT_IDS, STAFF_CHAT_IDS
+from tg2go.core.configs.constants import ADMIN_CHAT_IDS
 from tg2go.db.models.user import User
 from tg2go.services.user import UserService
 
@@ -13,7 +13,8 @@ class AdminFilter(Filter):
 
 class StaffFilter(Filter):
     async def __call__(self, message: types.Message) -> bool:
-        return message.chat.id in STAFF_CHAT_IDS
+        # return message.chat.id in STAFF_CHAT_IDS
+        return True
 
 
 class VerifiedFilter(Filter):

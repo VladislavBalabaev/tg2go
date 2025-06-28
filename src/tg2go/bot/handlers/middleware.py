@@ -12,9 +12,6 @@ from tg2go.bot.lib.message.io import (
     SendMessage,
 )
 from tg2go.bot.lifecycle.active import bot_state
-from tg2go.core.configs.constants import ADMIN_CHAT_IDS, STAFF_CHAT_IDS
-
-_IDS = [*ADMIN_CHAT_IDS, *STAFF_CHAT_IDS]
 
 
 class MessageLoggingMiddleware(BaseMiddleware):
@@ -29,7 +26,7 @@ class MessageLoggingMiddleware(BaseMiddleware):
 
         await ReceiveMessage(message)
 
-        if not bot_state.active and message.chat.id not in _IDS:
+        if not bot_state.active and message.text == "/start":
             await SendMessage(
                 chat_id=message.chat.id,
                 text="Бот не активен.",

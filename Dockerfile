@@ -14,5 +14,5 @@ RUN pip install --no-cache-dir --upgrade pip \
 ENV PYTHONPATH=/usr/src/app/src
 
 COPY .env ./
-COPY docs/ docs/
+COPY docs/bot/ docs/bot/
 COPY src/ src/

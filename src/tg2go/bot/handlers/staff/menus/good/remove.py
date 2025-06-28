@@ -31,7 +31,7 @@ async def GoodRemoveMenu(good_id: GoodId) -> StaffMenu:
     good_srv = StaffGoodService.Create()
     good = await good_srv.GetGood(good_id)
 
-    text = f"🔴 Бот не работает\n\nО позиции:\n{good.GetStaffInfo()}{StaffPosition.Good(good)}"
+    text = f"🔴 Бот не работает\n\n{good.GetStaffInfo()}{StaffPosition.Good(good)}"
 
     buttons = [
         [
