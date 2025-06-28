@@ -29,7 +29,6 @@ def PanelMenu() -> ClientMenu:
         "https://yandex.ru/maps/org/shaurma/240778331973/?ll=37.396586%2C55.722892&z=17"
     )
 
-    # TODO
     text = ""
     buttons = [
         [CreateButton(cb=PanelCallbackData, action=PanelAction.Menu)],

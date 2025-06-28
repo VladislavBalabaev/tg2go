@@ -71,7 +71,14 @@ class Good(Base, TimestampMixin):
     )
 
     def GetClientInfo(self) -> str:
-        return f"{self.name}, {self.price_rub}₽\n\nОписание: {self.description}"
+        return f"<b>{self.name}, {self.price_rub}₽</b>\n\n{self.description}"
 
     def GetStaffInfo(self) -> str:
+        if self.valid:
+            valid = "Доступен для покупки"
+        else:
+            valid = "<b>Недоступен для покупки</b>"
+
+        return f"<b>{self.name}, {self.price_rub}₽</b>\n\n{self.description}\n\nНаходится в категории: {self.category.name}.\n\n{valid}"
+
         return f"- Категория позиции: {self.category.name}\n- Название: {self.name}\n- Цена: {self.price_rub}₽\n- Доступен для покупки: {'Да' if self.valid else 'Нет'}\n- Описание: {self.description}"

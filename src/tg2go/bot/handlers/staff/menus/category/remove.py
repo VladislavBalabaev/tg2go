@@ -34,7 +34,7 @@ async def CategoryRemoveMenu(category_id: CategoryId) -> StaffMenu:
     cat_srv = StaffCategoryService.Create()
     category = await cat_srv.GetCategory(category_id)
 
-    text = f"🔴 Бот не работает\n\nО категории:\n{category.GetStaffInfo()}{StaffPosition.Category(category)}"
+    text = f"🔴 Бот не работает\n\n{category.GetStaffInfo()}{StaffPosition.Category(category)}"
     buttons = [
         [CreateButton(action=CategoryRemoveAction.Delete, category_id=category_id)],
         [CreateButton(action=CategoryRemoveAction.Back, category_id=category_id)],

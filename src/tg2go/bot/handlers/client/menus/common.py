@@ -27,7 +27,7 @@ class ClientMenu:
 
 
 class ClientPosition:
-    start = "\n\n\n🔹"
+    start = "\n\n\n➤ "
 
     class Label(str, Enum):
         Menu = "Меню"

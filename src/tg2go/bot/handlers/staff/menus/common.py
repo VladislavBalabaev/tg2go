@@ -25,7 +25,7 @@ class StaffMenu:
 
 
 class StaffPosition:
-    start = "\n\n\n🔹"
+    start = "\n\n\n➤ "
 
     class Label(str, Enum):
         Settings = "Настройки"

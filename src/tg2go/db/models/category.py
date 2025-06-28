@@ -48,4 +48,4 @@ class Category(Base, TimestampMixin):
     )
 
     def GetStaffInfo(self) -> str:
-        return f"- Название: {self.name}\n- Индекс: {self.index}\n- Содержит позиций: {len(self.goods)}\n\nЧем больше индекс, тем дальше категория в списке категорий."
+        return f"Категория '{self.name}'\n- Индекс: {self.index}\n- Содержит позиций: {len(self.goods)}\n\n<i>Чем больше индекс, тем дальше категория в списке категорий.</i>"

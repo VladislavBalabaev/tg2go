@@ -14,7 +14,7 @@ from tg2go.services.staff.good import StaffGoodService
 
 
 class CategoryAction(StaffAction):
-    AddGood = "🥗 Добавить позицию"
+    AddGood = "➕ Добавить позицию"
     ChangeCategory = "✏️ Изменить категорию"
     RemoveCategory = "🗑️ Удалить категорию"
     Back = "⬅️ Назад"
@@ -57,7 +57,7 @@ async def CategoryMenu(category_id: CategoryId) -> StaffMenu:
         for good in goods
     ]
 
-    text = f"🔴 Бот не работает\n\nО категории:\n{category.GetStaffInfo()}{StaffPosition.Category(category)}"
+    text = f"🔴 Бот не работает\n\n{category.GetStaffInfo()}{StaffPosition.Category(category)}"
     buttons = [
         [
             CreateButton(action=CategoryAction.ChangeCategory, category_id=category_id),

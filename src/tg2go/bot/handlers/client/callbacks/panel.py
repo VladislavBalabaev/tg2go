@@ -39,7 +39,7 @@ async def PanelAbout(callback_query: types.CallbackQuery) -> None:
 @router.callback_query(PanelCallbackData.filter(F.action == PanelAction.AboutService))
 async def PanelAboutService(callback_query: types.CallbackQuery) -> None:
     new_menu = PanelMenuExplain(
-        text="tg2go - сервис быстрых заказов через Telegram для уличной еды.\n\nПо вопросам и предложениям, пожалуйста, пишите @vbalab 😊"
+        text="<b>tg2go</b> - сервис быстрых заказов через Telegram для уличной еды.\n\nПо вопросам и предложениям, пожалуйста, пишите @vbalab 😊"
     )
 
     await ChangeToNewClientMenu(

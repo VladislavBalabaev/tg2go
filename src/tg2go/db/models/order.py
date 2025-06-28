@@ -72,21 +72,21 @@ class Order(Base, TimestampMixin):
     )
 
     def GetClientInfo(self) -> str:
-        info = "Шаурма / Сетунь\n📍Москва, ул. Толбухина, 13А, корп. 3\n\n"
+        info = "<b>Шаурма / Сетунь</b>\n📍Москва, ул. Толбухина, 13А, корп. 3\n\n"
 
         if not self.order_items:
             info += "Ваш заказ пока что пуст."
             return info
 
-        info += "Заказ:\n"
+        info += "<b>Заказ</b>:\n"
 
-        for i, item in enumerate(self.order_items, 1):
+        for item in self.order_items:
             name: str = item.good.name
             qty: int = item.quantity
             price: Decimal = item.unit_price_rub
 
-            info += f"{i}. {name}, {qty} шт. × {price}₽ = {price * qty}₽\n"
+            info += f"- {name}, {qty} шт. × {price}₽ = {price * qty}₽\n"
 
-        info += f"\nИтого: {self.total_price_rub}₽"
+        info += f"\n<b>Итого</b>: {self.total_price_rub}₽"
 
         return info

@@ -13,7 +13,7 @@ from tg2go.services.staff.category import StaffCategoryService
 
 
 class SettingsAction(StaffAction):
-    AddCategory = "🍽️ Добавить категорию"
+    AddCategory = "➕ Добавить категорию"
     Back = "⬅️ Назад"
 
 
