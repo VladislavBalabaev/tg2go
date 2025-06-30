@@ -14,7 +14,7 @@ from tg2go.services.staff.category import StaffCategoryService
 
 class SettingsAction(StaffAction):
     AddCategory = "➕ Добавить категорию"
-    Back = "⬅️ Назад"
+    Main = "☰ Главное"
 
 
 class SettingsCallbackData(CallbackData, prefix="staff.settings"):
@@ -50,7 +50,7 @@ async def SettingsMenu() -> StaffMenu:
     buttons = [
         [CreateButton(cb=SettingsCallbackData, action=SettingsAction.AddCategory)],
         *SplitButtonsInTwoColumns(plain_buttons),
-        [CreateButton(cb=SettingsCallbackData, action=SettingsAction.Back)],
+        [CreateButton(cb=SettingsCallbackData, action=SettingsAction.Main)],
     ]
 
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)

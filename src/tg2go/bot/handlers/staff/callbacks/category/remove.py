@@ -5,7 +5,7 @@ from tg2go.bot.handlers.staff.menus.category.remove import (
     CategoryRemoveAction,
     CategoryRemoveCallbackData,
 )
-from tg2go.bot.handlers.staff.menus.common import menu
+from tg2go.bot.handlers.staff.menus.common import staff_menu
 from tg2go.bot.handlers.staff.menus.settings import SettingsMenu
 from tg2go.services.staff.category import StaffCategoryService
 
@@ -22,7 +22,7 @@ async def CategoryRemoveDelete(
     srv = StaffCategoryService.Create()
     await srv.InvalidateCategory(callback_data.category_id)
 
-    await menu.ChangeToNewMenu(
+    await staff_menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await SettingsMenu(),
     )
@@ -36,7 +36,7 @@ async def CategoryRemoveBack(
     callback_query: types.CallbackQuery,
     callback_data: CategoryRemoveCallbackData,
 ) -> None:
-    await menu.ChangeToNewMenu(
+    await staff_menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await CategoryMenu(callback_data.category_id),
     )

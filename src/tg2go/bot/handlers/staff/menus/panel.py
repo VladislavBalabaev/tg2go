@@ -8,13 +8,21 @@ from tg2go.bot.lifecycle.active import bot_state
 
 class PanelAction(StaffAction):
     Activate = "🚀 Включить бота"
-    Deactivate = "💤 Выключить бота"
     Settings = "🛠️ Настройки"
     Exit = "Выйти из меню"
 
 
 class PanelCallbackData(CallbackData, prefix="staff.panel"):
     action: PanelAction
+
+
+class ActivePanelAction(StaffAction):
+    Deactivate = "💤 Выключить бота"
+    Exit = "Выйти из меню"
+
+
+class ActivePanelCallbackData(CallbackData, prefix="staff.active"):
+    action: ActivePanelAction
 
 
 def CreateButton(cb: type[CallbackData], action: StaffAction) -> InlineKeyboardButton:
@@ -28,8 +36,12 @@ def PanelMenu() -> StaffMenu:
     if bot_state.active:
         text = "🟢 Бот работает и принимает заказы\n\nЧтобы поменять настройки бота, сперва выключите его"
         buttons = [
-            [CreateButton(cb=PanelCallbackData, action=PanelAction.Deactivate)],
-            [CreateButton(cb=PanelCallbackData, action=PanelAction.Exit)],
+            [
+                CreateButton(
+                    cb=ActivePanelCallbackData, action=ActivePanelAction.Deactivate
+                )
+            ],
+            [CreateButton(cb=ActivePanelCallbackData, action=ActivePanelAction.Exit)],
         ]
     else:
         text = "🔴 Бот не работает\n\nПользователи не могут создать заказ"

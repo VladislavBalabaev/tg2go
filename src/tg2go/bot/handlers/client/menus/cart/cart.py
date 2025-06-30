@@ -11,7 +11,7 @@ from tg2go.services.client.order import ClientOrderService
 
 
 class CartAction(ClientAction):
-    Pay = "🧾 Оплатить"
+    Pay = "🧾 Оплатить"  # TODO: check wether chosen items are available now
     Change = "✏️ Редактировать"
     Clean = "♻️ Отчистить корзину"
     InHub = "🍽️ В меню"

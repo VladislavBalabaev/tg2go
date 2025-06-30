@@ -15,7 +15,7 @@ from tg2go.services.client.order import ClientOrderService
 
 class HubAction(ClientAction):
     Cart = "🛒 Корзина"
-    Back = "⬅️ Назад"
+    Main = "☰ Главное"
 
 
 class HubCallbackData(CallbackData, prefix="client.hub"):
@@ -52,7 +52,7 @@ async def HubMenu(chat_id: int) -> ClientMenu:
     buttons = [
         [CreateButton(cb=HubCallbackData, action=HubAction.Cart)],
         *SplitButtonsInTwoColumns(plain_buttons),
-        [CreateButton(cb=HubCallbackData, action=HubAction.Back)],
+        [CreateButton(cb=HubCallbackData, action=HubAction.Main)],
     ]
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 

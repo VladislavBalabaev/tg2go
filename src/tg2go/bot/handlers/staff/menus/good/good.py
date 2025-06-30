@@ -8,8 +8,10 @@ from tg2go.services.staff.good import StaffGoodService
 
 
 class GoodAction(StaffAction):
-    ChangeGood = "✏️ Изменить позицию"
-    RemoveGood = "🗑️ Удалить позицию"
+    Change = "✏️ Изменить позицию"
+    Remove = "🗑️ Удалить позицию"
+    Enable = "🚀 Сделать доступным"
+    Disable = "💤 Сделать недоступным"
     Back = "⬅️ Назад"
 
 
@@ -32,16 +34,23 @@ async def GoodMenu(good_id: GoodId) -> StaffMenu:
     good_srv = StaffGoodService.Create()
     good = await good_srv.GetGood(good_id)
 
-    text = f"🔴 Бот не работает\n\n{good.GetStaffInfo()}{StaffPosition.Good(good)}"
+    available_action = GoodAction.Disable if good.available else GoodAction.Enable
 
+    text = f"🔴 Бот не работает\n\n{good.GetStaffInfo()}{StaffPosition.Good(good)}"
     buttons = [
         [
             CreateButton(
-                action=GoodAction.ChangeGood,
+                action=GoodAction.Change,
                 good_id=good_id,
             ),
             CreateButton(
-                action=GoodAction.RemoveGood,
+                action=GoodAction.Remove,
+                good_id=good_id,
+            ),
+        ],
+        [
+            CreateButton(
+                action=available_action,
                 good_id=good_id,
             ),
         ],

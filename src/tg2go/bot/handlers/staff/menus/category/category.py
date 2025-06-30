@@ -44,7 +44,7 @@ async def CategoryMenu(category_id: CategoryId) -> StaffMenu:
     category = await cat_srv.GetCategory(category_id)
 
     good_srv = StaffGoodService.Create()
-    goods = await good_srv.GetAvailableGoods(category_id)
+    goods = await good_srv.GetValidGoods(category_id)
 
     plain_buttons = [
         InlineKeyboardButton(

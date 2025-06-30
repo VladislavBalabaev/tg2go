@@ -41,7 +41,7 @@ async def HubCategory(
     await callback_query.answer()
 
 
-@router.callback_query(HubCallbackData.filter(F.action == HubAction.Back))
+@router.callback_query(HubCallbackData.filter(F.action == HubAction.Main))
 async def HubBack(callback_query: types.CallbackQuery) -> None:
     new_menu = PanelMenu()
 

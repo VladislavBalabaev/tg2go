@@ -71,6 +71,20 @@ class GoodRepository:
 
             return list(result.scalars().all())
 
+    async def GetValidGoods(self, category_id: CategoryId) -> list[Good]:
+        async with self.session() as session:
+            result = await session.execute(
+                select(Good)
+                .options(selectinload(Good.category))
+                .join(Good.category)
+                .where(
+                    Good.valid.is_(True),
+                    Category.category_id == category_id,
+                )
+            )
+
+            return list(result.scalars().all())
+
     # --- Update ---
     async def UpdateGood(
         self,

@@ -9,8 +9,6 @@ from tg2go.bot.handlers.client.menus.cart.remove import CartRemoveMenu
 from tg2go.bot.handlers.client.menus.common import ChangeToNewClientMenu
 from tg2go.bot.handlers.client.menus.hub import HubMenu
 
-# from tg2go.services.client.order import ClientOrderService
-
 router = Router()
 
 

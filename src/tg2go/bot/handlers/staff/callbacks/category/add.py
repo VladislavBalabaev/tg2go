@@ -3,7 +3,7 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-from tg2go.bot.handlers.staff.menus.common import menu
+from tg2go.bot.handlers.staff.menus.common import staff_menu
 from tg2go.bot.handlers.staff.menus.settings import SettingsMenu
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
 from tg2go.services.staff.category import StaffCategoryService
@@ -62,7 +62,7 @@ async def CommandStaffAddCategoryIndex(
     )
     await state.clear()
 
-    await menu.SendMenu(
+    await staff_menu.SendMenu(
         chat_id=message.chat.id,
         menu=await SettingsMenu(),
     )

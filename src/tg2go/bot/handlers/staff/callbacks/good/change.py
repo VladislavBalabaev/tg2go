@@ -5,7 +5,7 @@ from aiogram.filters.state import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 
-from tg2go.bot.handlers.staff.menus.common import menu
+from tg2go.bot.handlers.staff.menus.common import staff_menu
 from tg2go.bot.handlers.staff.menus.good.change import (
     GoodChangeAction,
     GoodChangeCallbackData,
@@ -67,7 +67,7 @@ async def GoodChangeNameChange(
     )
     await state.clear()
 
-    await menu.SendMenu(
+    await staff_menu.SendMenu(
         chat_id=message.chat.id,
         menu=await GoodChangeMenu(data["good_id"]),
     )
@@ -133,7 +133,7 @@ async def GoodChangePriceRubChange(
     )
     await state.clear()
 
-    await menu.SendMenu(
+    await staff_menu.SendMenu(
         chat_id=message.chat.id,
         menu=await GoodChangeMenu(data["good_id"]),
     )
@@ -190,7 +190,7 @@ async def GoodChangeDescriptionChange(
     )
     await state.clear()
 
-    await menu.SendMenu(
+    await staff_menu.SendMenu(
         chat_id=message.chat.id,
         menu=await GoodChangeMenu(data["good_id"]),
     )
@@ -247,7 +247,7 @@ async def GoodChangeImageUrlChange(
     )
     await state.clear()
 
-    await menu.SendMenu(
+    await staff_menu.SendMenu(
         chat_id=message.chat.id,
         menu=await GoodChangeMenu(data["good_id"]),
     )
@@ -258,7 +258,7 @@ async def GoodChangeBack(
     callback_query: types.CallbackQuery,
     callback_data: GoodChangeCallbackData,
 ) -> None:
-    await menu.ChangeToNewMenu(
+    await staff_menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await GoodMenu(callback_data.good_id),
     )

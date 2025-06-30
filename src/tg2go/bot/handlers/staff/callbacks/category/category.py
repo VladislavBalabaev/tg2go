@@ -9,7 +9,7 @@ from tg2go.bot.handlers.staff.menus.category.category import (
 )
 from tg2go.bot.handlers.staff.menus.category.change import CategoryChangeMenu
 from tg2go.bot.handlers.staff.menus.category.remove import CategoryRemoveMenu
-from tg2go.bot.handlers.staff.menus.common import menu
+from tg2go.bot.handlers.staff.menus.common import staff_menu
 from tg2go.bot.handlers.staff.menus.good.good import GoodMenu
 from tg2go.bot.handlers.staff.menus.settings import SettingsMenu
 from tg2go.bot.lib.message.io import SendMessage
@@ -45,7 +45,7 @@ async def CategoryChangeCategory(
     callback_query: types.CallbackQuery,
     callback_data: CategoryCallbackData,
 ) -> None:
-    await menu.ChangeToNewMenu(
+    await staff_menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await CategoryChangeMenu(callback_data.category_id),
     )
@@ -59,7 +59,7 @@ async def CategoryRemoveCategory(
     callback_query: types.CallbackQuery,
     callback_data: CategoryCallbackData,
 ) -> None:
-    await menu.ChangeToNewMenu(
+    await staff_menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await CategoryRemoveMenu(callback_data.category_id),
     )
@@ -71,7 +71,7 @@ async def CategoryGood(
     callback_query: types.CallbackQuery,
     callback_data: CategoryGoodCallbackData,
 ) -> None:
-    await menu.ChangeToNewMenu(
+    await staff_menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await GoodMenu(callback_data.good_id),
     )
@@ -80,7 +80,7 @@ async def CategoryGood(
 
 @router.callback_query(CategoryCallbackData.filter(F.action == CategoryAction.Back))
 async def CategoryBack(callback_query: types.CallbackQuery) -> None:
-    await menu.ChangeToNewMenu(
+    await staff_menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await SettingsMenu(),
     )

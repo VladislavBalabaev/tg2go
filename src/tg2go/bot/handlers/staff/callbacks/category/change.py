@@ -9,7 +9,7 @@ from tg2go.bot.handlers.staff.menus.category.change import (
     CategoryChangeCallbackData,
     CategoryChangeMenu,
 )
-from tg2go.bot.handlers.staff.menus.common import menu
+from tg2go.bot.handlers.staff.menus.common import staff_menu
 from tg2go.bot.lib.message.io import ContextIO, SendMessage
 from tg2go.db.models.category import Category
 from tg2go.services.staff.category import StaffCategoryService
@@ -66,7 +66,7 @@ async def CategoryChangeNameChange(
     )
     await state.clear()
 
-    await menu.SendMenu(
+    await staff_menu.SendMenu(
         chat_id=message.chat.id,
         menu=await CategoryChangeMenu(data["category_id"]),
     )
@@ -129,7 +129,7 @@ async def CategoryChangeIndexChange(
     )
     await state.clear()
 
-    await menu.SendMenu(
+    await staff_menu.SendMenu(
         chat_id=message.chat.id,
         menu=await CategoryChangeMenu(data["category_id"]),
     )
@@ -142,7 +142,7 @@ async def CategoryChangeBack(
     callback_query: types.CallbackQuery,
     callback_data: CategoryChangeCallbackData,
 ) -> None:
-    await menu.ChangeToNewMenu(
+    await staff_menu.ChangeToNewMenu(
         callback_query=callback_query,
         new_menu=await CategoryMenu(callback_data.category_id),
     )

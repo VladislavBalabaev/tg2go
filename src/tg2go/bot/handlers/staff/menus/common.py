@@ -6,7 +6,7 @@ from pathlib import Path
 from aiogram import types
 from aiogram.exceptions import TelegramBadRequest, TelegramNetworkError
 
-from tg2go.bot.lib.chat.username import GetChatUserLoggingPart
+from tg2go.bot.lib.chat.username import GetChatUserLoggingPart, GetTgUsername
 from tg2go.bot.lib.message.image import Image
 from tg2go.bot.lib.message.io import ContextIO, DeleteMessage, SendImage, SignIO
 from tg2go.db.models.category import Category
@@ -68,35 +68,38 @@ def SplitButtonsInTwoColumns(
     return new_buttons
 
 
-@dataclass
-class StaffMessage:
-    chat_id: int
-    message_id: int
-
-
 class StaffMenuSingleton:
     def __init__(self) -> None:
-        self.message: StaffMessage | None = None
+        self.message: types.Message | None = None
 
-    async def TryDeleteMenuMessage(self) -> None:
+    async def _DeleteMenuMessage(self) -> None:
         if self.message is None:
             return
 
         await DeleteMessage(
-            chat_id=self.message.chat_id,
+            chat_id=self.message.chat.id,
             message_id=self.message.message_id,
         )
+
+    async def InvalidateMenuMessage(self, new_chat_id: int) -> None:
+        if self.message is None:
+            return
+
+        if new_chat_id == self.message.chat.id:
+            await self._DeleteMenuMessage()
+        else:
+            username = await GetTgUsername(new_chat_id) or "-/-"
+            await self.message.edit_caption(
+                caption=f"➤ Управление меню было передано @{username}."
+            )
 
         self.message = None
 
     async def StoreMenuMessage(self, message: types.Message) -> None:
-        self.message = StaffMessage(
-            chat_id=message.chat.id,
-            message_id=message.message_id,
-        )
+        self.message = message
 
     async def SendMenu(self, chat_id: int, menu: StaffMenu) -> types.Message | None:
-        await self.TryDeleteMenuMessage()
+        await self.InvalidateMenuMessage(chat_id)
 
         message = await SendImage(
             chat_id=chat_id,
@@ -122,7 +125,7 @@ class StaffMenuSingleton:
         assert isinstance(msg, types.Message)
 
         if self.message and msg.message_id != self.message.message_id:
-            await self.TryDeleteMenuMessage()
+            await self.InvalidateMenuMessage(msg.chat.id)
 
         if self.message is None:
             await self.StoreMenuMessage(msg)
@@ -159,5 +162,8 @@ class StaffMenuSingleton:
             f"{part} {SignIO.Out.value}{ContextIO.Doc.value} {repr(media.caption)}"
         )
 
+    async def Close(self) -> None:
+        await self._DeleteMenuMessage()
 
-menu = StaffMenuSingleton()
+
+staff_menu = StaffMenuSingleton()

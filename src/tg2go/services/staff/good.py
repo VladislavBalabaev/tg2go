@@ -13,7 +13,7 @@ class StaffGoodService:
 
         # --- Read ---
         self.GetGood = self._good.GetGood
-        self.GetAvailableGoods = self._good.GetAvailableGoods
+        self.GetValidGoods = self._good.GetValidGoods
 
         # --- Update ---
         self.UpdateGood = self._good.UpdateGood

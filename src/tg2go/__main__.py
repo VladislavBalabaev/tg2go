@@ -7,6 +7,7 @@ from tg2go.bot.handlers.forall.register import (
     RegisterHandlerZeroMessage,
 )
 from tg2go.bot.handlers.middleware import SetBotMiddleware
+from tg2go.bot.handlers.staff.menus.common import staff_menu
 from tg2go.bot.handlers.staff.register import RegisterStaffHandlers
 from tg2go.bot.lib.notification import admin
 from tg2go.bot.lib.notification.erroring import SetExceptionHandlers
@@ -37,6 +38,7 @@ async def OnStartup() -> None:
 
 
 async def OnShutdown() -> None:
+    await staff_menu.Close()
     await admin.NotifyOnShutdown()
 
     await logs.LoggerShutdown()
