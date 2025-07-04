@@ -7,7 +7,7 @@ from tg2go.bot.handlers.staff.menus.common import (
     StaffMenu,
     StaffPosition,
 )
-from tg2go.bot.lib.message.image import GetHeaderDir
+from tg2go.bot.lib.message.image import GetStaffHeaderDir
 from tg2go.db.models.common.types import CategoryId, GoodId
 from tg2go.services.staff.category import StaffCategoryService
 from tg2go.services.staff.good import StaffGoodService
@@ -71,7 +71,7 @@ async def CategoryMenu(category_id: CategoryId) -> StaffMenu:
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     return StaffMenu(
-        image_dir=GetHeaderDir(),
+        image_dir=GetStaffHeaderDir(),
         caption=text,
         reply_markup=markup,
     )

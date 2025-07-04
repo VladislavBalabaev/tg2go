@@ -7,7 +7,7 @@ from tg2go.bot.handlers.client.menus.common import (
     ClientPosition,
     SplitButtonsInTwoColumns,
 )
-from tg2go.bot.lib.message.image import GetHeaderDir
+from tg2go.bot.lib.message.image import GetClientHeaderDir
 from tg2go.db.models.common.types import CategoryId
 from tg2go.services.client.category import ClientCategoryService
 from tg2go.services.client.order import ClientOrderService
@@ -57,7 +57,7 @@ async def HubMenu(chat_id: int) -> ClientMenu:
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     return ClientMenu(
-        image_dir=GetHeaderDir(),
+        image_dir=GetClientHeaderDir(),
         caption=text,
         reply_markup=markup,
     )

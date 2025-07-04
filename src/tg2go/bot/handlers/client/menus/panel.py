@@ -2,7 +2,7 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from tg2go.bot.handlers.client.menus.common import ClientAction, ClientMenu
-from tg2go.bot.lib.message.image import GetHeaderDir
+from tg2go.bot.lib.message.image import GetClientHeaderDir
 
 
 class PanelAction(ClientAction):
@@ -44,7 +44,7 @@ def PanelMenu() -> ClientMenu:
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     return ClientMenu(
-        image_dir=GetHeaderDir(),
+        image_dir=GetClientHeaderDir(),
         caption=text,
         reply_markup=markup,
     )
@@ -55,7 +55,7 @@ def PanelMenuExplain(text: str) -> ClientMenu:
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     return ClientMenu(
-        image_dir=GetHeaderDir(),
+        image_dir=GetClientHeaderDir(),
         caption=text,
         reply_markup=markup,
     )

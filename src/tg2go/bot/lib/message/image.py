@@ -4,7 +4,7 @@ from pathlib import Path
 from aiogram import types
 
 from tg2go.bot.lifecycle.creator import bot
-from tg2go.core.configs.paths import DIR_HEADER, DIR_IMAGES
+from tg2go.core.configs.paths import DIR_CLIENT_HEADER, DIR_IMAGES, DIR_STAFF_HEADER
 from tg2go.db.models.common.types import GoodId
 
 
@@ -15,8 +15,12 @@ def GetGoodImageDir(good_id: GoodId) -> Path:
     return directory
 
 
-def GetHeaderDir() -> Path:
-    return DIR_HEADER
+def GetClientHeaderDir() -> Path:
+    return DIR_CLIENT_HEADER
+
+
+def GetStaffHeaderDir() -> Path:
+    return DIR_STAFF_HEADER
 
 
 class Image:

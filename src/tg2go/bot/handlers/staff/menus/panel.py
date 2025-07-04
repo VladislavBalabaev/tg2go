@@ -2,7 +2,7 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from tg2go.bot.handlers.staff.menus.common import StaffAction, StaffMenu
-from tg2go.bot.lib.message.image import GetHeaderDir
+from tg2go.bot.lib.message.image import GetStaffHeaderDir
 from tg2go.bot.lifecycle.active import bot_state
 
 
@@ -54,7 +54,7 @@ def PanelMenu() -> StaffMenu:
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     return StaffMenu(
-        image_dir=GetHeaderDir(),
+        image_dir=GetStaffHeaderDir(),
         caption=text,
         reply_markup=markup,
     )

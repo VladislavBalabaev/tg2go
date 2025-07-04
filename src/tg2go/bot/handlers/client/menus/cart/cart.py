@@ -6,7 +6,7 @@ from tg2go.bot.handlers.client.menus.common import (
     ClientMenu,
     ClientPosition,
 )
-from tg2go.bot.lib.message.image import GetHeaderDir
+from tg2go.bot.lib.message.image import GetClientHeaderDir
 from tg2go.services.client.order import ClientOrderService
 
 
@@ -44,7 +44,7 @@ async def CartMenu(chat_id: int) -> ClientMenu:
     markup = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     return ClientMenu(
-        image_dir=GetHeaderDir(),
+        image_dir=GetClientHeaderDir(),
         caption=text,
         reply_markup=markup,
     )

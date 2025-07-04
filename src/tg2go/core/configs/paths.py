@@ -7,7 +7,8 @@ _DIR_LOGS = _DIR_DATA / "logs"
 
 DIR_TEMP = _DIR_DATA / "temp"
 DIR_IMAGES = _DIR_DATA / "images"
-DIR_HEADER = _DIR_DOCS / "header"
+DIR_CLIENT_HEADER = _DIR_DOCS / "client_header"
+DIR_STAFF_HEADER = _DIR_DOCS / "staff_header"
 
 _dirs = [
     _DIR_DATA,
