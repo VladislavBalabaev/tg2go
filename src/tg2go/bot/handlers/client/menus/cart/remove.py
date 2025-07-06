@@ -15,7 +15,7 @@ class CartRemoveAction(ClientAction):
     Back = "⬅️ Назад"
 
 
-class CartRemoveCallbackData(CallbackData, prefix="staff.cat.remove"):
+class CartRemoveCallbackData(CallbackData, prefix="client.cart.remove"):
     action: CartRemoveAction
 
 

@@ -191,7 +191,7 @@ class OrderRepository:
 
         return item.order_item_id
 
-    async def RemoveAllItemsFromOrder(self, order_id: OrderId) -> OrderItemId:
+    async def RemoveAllItemsFromOrder(self, order_id: OrderId) -> None:
         async with self.session() as session:
             order = await session.get(Order, order_id)
 
@@ -205,5 +205,3 @@ class OrderRepository:
             order.total_price_rub = Decimal("0.0")
 
             await session.commit()
-
-        return item.order_item_id
